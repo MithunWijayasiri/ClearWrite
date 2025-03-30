@@ -369,9 +369,9 @@ const ClearWritePage = () => {
 
   return (
     <div className={`clear-write ${isDarkMode ? 'dark' : ''}`}>
-      <div className="container py-8 md:py-12">
+      <div className="container py-4 md:py-6">
         {/* Header */}
-        <header className="header mb-6">
+        <header className="header mb-4">
           <div>
             <h1 className="title">Clear Write</h1>
             {/* Added subheading class */}
@@ -409,12 +409,12 @@ const ClearWritePage = () => {
         </header>
 
         {/* Main Content Area */}
-        <main className="space-y-6 relative">
+        <main className="space-y-4 relative">
           {/* Text Area */}
-          <div className="relative">
+          <div className="relative mb-4">
             <textarea
               ref={textareaRef}
-              rows={12}
+              rows={10}
               className="text-area transition-colors duration-200"
               placeholder="Paste or type your text here..."
               value={text}
@@ -436,7 +436,7 @@ const ClearWritePage = () => {
 
           {/* Grammar Error Display */}
           {grammarError && (
-            <div className="error-message animate-fade-in">
+            <div className="error-message animate-fade-in mb-4">
               <p className="font-semibold">Error:</p>
               <p>{grammarError}</p>
               {grammarError.includes('rate limit') && (
@@ -446,7 +446,7 @@ const ClearWritePage = () => {
           )}
 
           {/* Grammar Suggestions List */}
-          <div className="space-y-4">
+          <div className="space-y-2 pt-2">
             <h2 className={`suggestion-heading transition-all duration-200 ${
               shouldShowSuggestions ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
             }`}>
