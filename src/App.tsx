@@ -281,16 +281,30 @@ const ClearWritePage = () => {
     let word: string | null = null;
     let wordRect: DOMRect | null = null;
 
-    if (document.caretRangeFromPoint) {
-      const range = document.caretRangeFromPoint(x, y);
-      if (range) {
-        range.expand('word');
-        const potentialWord = range.toString().trim().replace(/[^a-zA-Z'-]/g, '');
-        if (potentialWord.length > 2) {
-          word = potentialWord;
-          wordRect = range.getBoundingClientRect();
+    try {
+      if (document.caretRangeFromPoint) {
+        const range = document.caretRangeFromPoint(x, y);
+        if (range && range.startContainer) {
+          // Only try to expand if the node is a text node (nodeType 3)
+          // This helps avoid issues in Chrome where non-text nodes might be selected
+          if (range.startContainer.nodeType === Node.TEXT_NODE) {
+            range.expand('word');
+            const potentialWord = range.toString().trim().replace(/[^a-zA-Z'-]/g, '');
+            
+            // More strict validation for words - ensure it's a real word
+            if (potentialWord.length > 2 && /^[a-zA-Z'-]+$/.test(potentialWord)) {
+              // Skip words that might be UI elements like "Suggestions" or "Checking"
+              const commonUIWords = ['suggestions', 'checking', 'synonyms', 'loading', 'apply'];
+              if (!commonUIWords.includes(potentialWord.toLowerCase())) {
+                word = potentialWord;
+                wordRect = range.getBoundingClientRect();
+              }
+            }
+          }
         }
       }
+    } catch (error) {
+      console.warn('Error getting word at cursor position:', error);
     }
 
     // Handle new word hover
@@ -331,6 +345,11 @@ const ClearWritePage = () => {
         });
     } else if (!word && hoveredWordRef.current) {
       hoveredWordRef.current = null;
+      
+      // Hide popup when we don't have a valid word
+      if (synonymPopupState.visible) {
+        setSynonymPopupState(prev => ({ ...prev, visible: false, word: null }));
+      }
     }
   }, [synonymPopupState.visible]);
 

@@ -1,6 +1,6 @@
 # ✍️ ClearWrite - Grammar Checker
 
-![Demo Screenshot](demo-screenshot.png)
+![Demo Screenshot](/assets/screenshot.png)
 
 ClearWrite is an intelligent writing assistant that provides real-time grammar checking, style suggestions, and vocabulary enhancements. Built with modern web technologies, it helps users craft polished content with confidence by combining LanguageTool's robust proofreading engine with a clean, user-friendly interface.
 
