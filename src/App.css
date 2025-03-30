@@ -38,14 +38,14 @@
 }
 
 /* Grammar checker styles */
-.grammar-checker {
+.clear-write {
   min-height: 100vh;
   background-color: #f9fafb;
   color: #111827;
   transition: colors 0.3s;
 }
 
-.grammar-checker.dark {
+.clear-write.dark {
   background-color: #171717;
   color: #f3f4f6;
 }

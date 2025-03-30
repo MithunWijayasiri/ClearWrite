@@ -1,4 +1,5 @@
 // App.tsx
+// Clear Write - A tool to elevate your writing with perfect grammar and style
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { debounce } from 'lodash';
 import './App.css';
@@ -93,7 +94,6 @@ const checkGrammarWithAPI = async (text: string, language: string): Promise<Sugg
   params.append('language', actualLanguage);
   params.append('level', 'picky');
   params.append('enabledOnly', 'false');
-  params.append('enabledCategories', 'GRAMMAR,TYPOS,STYLE,PUNCTUATION,CASING,CONFUSED_WORDS,MISC');
   params.append('disabledRules', 'UPPERCASE_SENTENCE_START');
 
   try {
@@ -183,7 +183,7 @@ const MoonIcon = () => (
   </svg>
 );
 
-const GrammarCheckerPage = () => {
+const ClearWritePage = () => {
   const [text, setText] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoadingGrammar, setIsLoadingGrammar] = useState<boolean>(false);
@@ -368,14 +368,14 @@ const GrammarCheckerPage = () => {
   const shouldShowLooksGood = !isLoadingGrammar && !grammarError && text.trim() && suggestions.length === 0;
 
   return (
-    <div className={`grammar-checker ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`clear-write ${isDarkMode ? 'dark' : ''}`}>
       <div className="container py-8 md:py-12">
         {/* Header */}
         <header className="header mb-6">
           <div>
-            <h1 className="title">Grammar Checker</h1>
+            <h1 className="title">Clear Write</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Elevate Your Writing with Perfect Grammar and Style
+              Elevate Your Writing with Perfect Grammar and Style.
             </p>
           </div>
           
@@ -614,4 +614,4 @@ const GrammarCheckerPage = () => {
   );
 };
 
-export default GrammarCheckerPage;
+export default ClearWritePage;
