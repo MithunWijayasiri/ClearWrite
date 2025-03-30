@@ -470,3 +470,100 @@
     opacity: .5;
   }
 }
+
+/* App.css */
+/* Add these new styles to your existing file */
+
+/* Animation */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+/* Enhanced text area */
+.text-area {
+  min-height: 200px;
+  line-height: 1.6;
+  transition: all 0.2s;
+}
+
+/* Better loading indicator */
+.checking-indicator {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.dark .checking-indicator {
+  background-color: rgba(17, 24, 39, 0.8);
+}
+
+/* Improved suggestion items */
+.suggestion-item {
+  transition: all 0.2s;
+  margin-bottom: 0.75rem;
+}
+
+.suggestion-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Better category badges */
+.category-badge {
+  transition: all 0.2s;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .suggestion-item {
+    padding: 0.75rem;
+  }
+  
+  .apply-button {
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+}
+
+/* Dark mode transitions */
+.dark .text-area,
+.dark .suggestion-item,
+.dark .category-badge {
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+/* Synonym popup improvements */
+.synonym-popup {
+  transition: opacity 0.2s, transform 0.2s;
+  transform-origin: top left;
+}
+
+.synonym-item {
+  transition: background-color 0.2s;
+}
+
+/* Focus states */
+.text-area:focus,
+.apply-button:focus,
+.theme-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.dark .text-area:focus,
+.dark .apply-button:focus,
+.dark .theme-toggle:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+}
