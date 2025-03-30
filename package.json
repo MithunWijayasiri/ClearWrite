@@ -1,6 +1,7 @@
 {
   "name": "grammar-checker",
   "version": "0.1.0",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
