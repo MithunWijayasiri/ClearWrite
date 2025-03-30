@@ -374,7 +374,8 @@ const ClearWritePage = () => {
         <header className="header mb-6">
           <div>
             <h1 className="title">Clear Write</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {/* Added subheading class */}
+            <p className="subheading text-sm mt-1">
               Elevate Your Writing with Perfect Grammar and Style.
             </p>
           </div>

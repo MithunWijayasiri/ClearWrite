@@ -37,17 +37,22 @@
   }
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 /* Grammar checker styles */
 .clear-write {
   min-height: 100vh;
-  background-color: #f9fafb;
-  color: #111827;
-  transition: colors 0.3s;
+  /* Inspired gradient background */
+  background: linear-gradient(180deg, #FFF0EC 0%, #FFD1C1 100%); /* Lighter pink/peach gradient */
+  color: #4A4A4A; /* Darker grey for text */
+  transition: background 0.3s, color 0.3s;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* Use Inter first */
 }
 
 .clear-write.dark {
-  background-color: #171717;
-  color: #f3f4f6;
+  /* Darker gradient */
+  background: linear-gradient(180deg, #2D2A2A 0%, #4B3F3F 100%);
+  color: #EAEAEA; /* Light grey text */
 }
 
 .container {
@@ -64,9 +69,28 @@
 }
 
 .title {
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: 'Inter', sans-serif; /* Explicitly use Inter */
+  font-size: 2.4rem; /* Slightly larger */
+  font-weight: 700; /* Bolder */
+  letter-spacing: -0.03em; /* Tighter spacing */
+  color: #222; /* Even darker title */
+  margin-bottom: 0.2rem; /* Reduce space below title */
+}
+
+.dark .title {
+  color: #fff; /* White title in dark mode */
+}
+
+/* Style for the new subheading class */
+.subheading {
+  font-size: 0.9rem;
+  font-weight: 400; /* Regular weight */
+  color: #777; /* Muted grey */
+  letter-spacing: 0.01em; /* Slightly wider spacing */
+}
+
+.dark .subheading {
+  color: #bbb; /* Lighter grey in dark mode */
 }
 
 @media (min-width: 640px) {
@@ -78,20 +102,24 @@
 .theme-toggle {
   padding: 0.5rem;
   border-radius: 9999px;
-  color: #6b7280;
-  transition: background-color 0.2s, color 0.2s;
+  color: #888; /* Muted grey */
+  background: none; /* Remove background */
+  border: 1px solid transparent; /* Prepare for focus */
+  transition: color 0.2s, border-color 0.2s;
 }
 
 .dark .theme-toggle {
-  color: #9ca3af;
+  color: #aaa;
 }
 
 .theme-toggle:hover {
-  background-color: #e5e7eb;
+  color: #555; /* Darken on hover */
+  background: none;
 }
 
 .dark .theme-toggle:hover {
-  background-color: #404040;
+  color: #ddd; /* Lighten on hover */
+  background: none;
 }
 
 .theme-toggle:focus {
@@ -105,38 +133,46 @@
 
 .text-area {
   width: 100%;
-  padding: 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  background-color: white;
-  color: #111827;
+  padding: 1.25rem; /* Slightly more padding */
+  border: 1px solid #FAD0C4; /* Soft border matching light theme */
+  border-radius: 0.75rem; /* More rounded */
+  box-shadow: none; /* Remove shadow for minimalism */
+  background-color: rgba(255, 255, 255, 0.6); /* Semi-transparent white */
+  color: #333;
   font-size: 1rem;
-  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s, color 0.15s;
+  line-height: 1.6;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+  backdrop-filter: blur(5px); /* Subtle blur effect */
 }
 
 .dark .text-area {
-  border-color: #404040;
-  background-color: #262626;
-  color: #f3f4f6;
+  border-color: #4B3F3F; /* Dark border */
+  background-color: rgba(45, 42, 42, 0.6); /* Dark semi-transparent */
+  color: #EAEAEA;
+  backdrop-filter: blur(5px);
 }
 
-.text-area:focus {
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
-  border-color: #6366f1;
-}
+/* Focus state removed from here, handled globally later */
 
+/* Better loading indicator - Adjusted position and style */
 .checking-indicator {
   position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
-  font-size: 0.75rem;
-  color: #9ca3af;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  bottom: 1rem; /* Adjusted position */
+  right: 1rem; /* Adjusted position */
+  font-size: 0.8rem;
+  color: #888; /* Muted color */
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  display: flex; /* Use flex for alignment */
+  align-items: center;
+  gap: 0.25rem; /* Space between text and dots */
+  /* animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; */ /* Keep existing animation if desired */
 }
 
 .dark .checking-indicator {
-  color: #6b7280;
+  color: #aaa;
+  background-color: rgba(45, 42, 42, 0.7);
 }
 
 .error-message {
@@ -155,14 +191,15 @@
 }
 
 .suggestion-heading {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 1.1rem; /* Slightly smaller */
+  font-weight: 500; /* Medium weight */
+  color: #555; /* Muted color */
   transition: opacity 0.3s;
+  margin-bottom: 0.5rem; /* Add some space below */
 }
 
 .dark .suggestion-heading {
-  color: #e5e7eb;
+  color: #bbb;
 }
 
 .suggestion-list {
@@ -173,147 +210,121 @@
   opacity: 0.5;
 }
 
+/* Improved suggestion items */
 .suggestion-item {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent */
   padding: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
-  transition: opacity 0.3s ease-in-out;
+  box-shadow: none; /* Remove shadow */
+  border-radius: 0.6rem; /* Slightly more rounded */
+  border: 1px solid rgba(255, 154, 139, 0.3); /* Subtle border matching theme */
+  transition: all 0.2s;
+  margin-bottom: 0.75rem;
+  backdrop-filter: blur(5px); /* Subtle blur */
 }
 
 .dark .suggestion-item {
-  background-color: rgba(38, 38, 38, 0.7);
-  border-color: rgba(64, 64, 64, 0.5);
-  backdrop-filter: blur(8px);
+  background-color: rgba(60, 55, 55, 0.5); /* Dark semi-transparent */
+  border-color: rgba(75, 63, 63, 0.6); /* Darker border */
+  backdrop-filter: blur(5px);
+}
+
+.suggestion-item:hover {
+  background-color: rgba(255, 255, 255, 0.7); /* Lighten on hover */
+  border-color: rgba(255, 154, 139, 0.5);
+  transform: translateY(-1px); /* Keep subtle lift */
+}
+
+.dark .suggestion-item:hover {
+  background-color: rgba(75, 68, 68, 0.7);
+  border-color: rgba(95, 83, 83, 0.8);
+}
+
+/* Use subtle top border instead of left border */
+.suggestion-item-grammar,
+.suggestion-item-typos,
+.suggestion-item-style,
+.suggestion-item-punctuation,
+.suggestion-item-default {
+  border-left-width: 0; /* Remove left border */
+  border-top-width: 3px; /* Add top border */
+  border-top-style: solid;
+  padding-top: calc(1rem - 3px); /* Adjust padding */
 }
 
 .suggestion-item-grammar {
-  border-left-width: 4px;
-  border-left-color: #3b82f6;
+  border-top-color: #FF6B6B; /* Coral red for grammar */
 }
-
-.dark .suggestion-item-grammar {
-  border-left-color: #60a5fa;
-}
+.dark .suggestion-item-grammar { border-top-color: #FF8787; }
 
 .suggestion-item-typos {
-  border-left-width: 4px;
-  border-left-color: #ef4444;
+  border-top-color: #FF9A8B; /* Lighter peach for typos */
 }
-
-.dark .suggestion-item-typos {
-  border-left-color: #f87171;
-}
+.dark .suggestion-item-typos { border-top-color: #FFB3A7; }
 
 .suggestion-item-style {
-  border-left-width: 4px;
-  border-left-color: #8b5cf6;
+  border-top-color: #FFAA71; /* Orange-peach for style */
 }
-
-.dark .suggestion-item-style {
-  border-left-color: #a78bfa;
-}
+.dark .suggestion-item-style { border-top-color: #FFC096; }
 
 .suggestion-item-punctuation {
-  border-left-width: 4px;
-  border-left-color: #eab308;
+  border-top-color: #FFD1C1; /* Lightest peach for punctuation */
 }
-
-.dark .suggestion-item-punctuation {
-  border-left-color: #facc15;
-}
+.dark .suggestion-item-punctuation { border-top-color: #FFE0D8; }
 
 .suggestion-item-default {
-  border-left-width: 4px;
-  border-left-color: #9ca3af;
+  border-top-color: #E0E0E0; /* Neutral grey */
 }
+.dark .suggestion-item-default { border-top-color: #666; }
 
-.dark .suggestion-item-default {
-  border-left-color: #6b7280;
-}
-
+/* Better category badges */
 .category-badge {
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: 0.7rem; /* Smaller text */
   font-weight: 500;
-  padding: 0 0.5rem;
-  padding-top: 0.125rem;
-  padding-bottom: 0.125rem;
-  border-radius: 9999px;
+  padding: 0.1rem 0.5rem; /* Adjust padding */
+  border-radius: 0.25rem; /* Less rounded */
   margin-bottom: 0.5rem;
+  border: 1px solid transparent; /* Base border */
+  transition: all 0.2s;
 }
 
-.category-badge-grammar {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
+/* Match badge colors to top border colors */
+.category-badge-grammar { background-color: rgba(255, 107, 107, 0.15); color: #D63031; border-color: rgba(255, 107, 107, 0.3); }
+.dark .category-badge-grammar { background-color: rgba(255, 135, 135, 0.2); color: #FFBDBD; border-color: rgba(255, 135, 135, 0.4); }
 
-.dark .category-badge-grammar {
-  background-color: rgba(30, 58, 138, 0.5);
-  color: #93c5fd;
-}
+.category-badge-typos { background-color: rgba(255, 154, 139, 0.15); color: #E17055; border-color: rgba(255, 154, 139, 0.3); }
+.dark .category-badge-typos { background-color: rgba(255, 179, 167, 0.2); color: #FFD6CC; border-color: rgba(255, 179, 167, 0.4); }
 
-.category-badge-typos {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
+.category-badge-style { background-color: rgba(255, 170, 113, 0.15); color: #F0932B; border-color: rgba(255, 170, 113, 0.3); }
+.dark .category-badge-style { background-color: rgba(255, 192, 150, 0.2); color: #FFE0C2; border-color: rgba(255, 192, 150, 0.4); }
 
-.dark .category-badge-typos {
-  background-color: rgba(127, 29, 29, 0.5);
-  color: #fca5a5;
-}
+.category-badge-punctuation { background-color: rgba(255, 209, 193, 0.2); color: #E84393; border-color: rgba(255, 209, 193, 0.4); } /* Pinkish for punctuation */
+.dark .category-badge-punctuation { background-color: rgba(255, 224, 216, 0.25); color: #FFC7D9; border-color: rgba(255, 224, 216, 0.5); }
 
-.category-badge-style {
-  background-color: #ede9fe;
-  color: #5b21b6;
-}
-
-.dark .category-badge-style {
-  background-color: rgba(91, 33, 182, 0.5);
-  color: #c4b5fd;
-}
-
-.category-badge-punctuation {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.dark .category-badge-punctuation {
-  background-color: rgba(146, 64, 14, 0.5);
-  color: #fcd34d;
-}
-
-.category-badge-default {
-  background-color: #f3f4f6;
-  color: #1f2937;
-}
-
-.dark .category-badge-default {
-  background-color: #374151;
-  color: #e5e7eb;
-}
+.category-badge-default { background-color: rgba(189, 195, 199, 0.2); color: #636E72; border-color: rgba(189, 195, 199, 0.4); }
+.dark .category-badge-default { background-color: rgba(129, 135, 139, 0.25); color: #B0BEC5; border-color: rgba(129, 135, 139, 0.5); }
 
 .issue-text {
   font-size: 0.875rem;
-  color: #4b5563;
+  color: #555; /* Slightly darker grey */
 }
 
 .dark .issue-text {
-  color: #9ca3af;
+  color: #bbb; /* Lighter grey */
 }
 
 .original-text {
-  font-weight: 500;
-  color: #dc2626;
-  text-decoration: line-through;
-  text-decoration-color: #ef4444;
-  text-decoration-thickness: 1px;
+  font-weight: 400; /* Normal weight */
+  color: #D63031; /* Coral red */
+  background-color: rgba(255, 107, 107, 0.1); /* Subtle background */
+  padding: 0 0.2rem;
+  border-radius: 0.2rem;
+  text-decoration: none; /* Remove line-through */
 }
 
 .dark .original-text {
-  color: #f87171;
-  text-decoration-color: rgba(239, 68, 68, 0.7);
+  color: #FF8787;
+  background-color: rgba(255, 135, 135, 0.15);
 }
 
 .suggestion-text {
@@ -327,126 +338,127 @@
 
 .suggestion-text-highlight {
   font-weight: 500;
-  color: #16a34a;
-  background-color: #dcfce7;
-  padding: 0 0.25rem;
-  padding-top: 0.125rem;
-  padding-bottom: 0.125rem;
-  border-radius: 0.25rem;
+  color: #00B894; /* Teal green */
+  background-color: rgba(0, 184, 148, 0.1); /* Subtle teal background */
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
 }
 
 .dark .suggestion-text-highlight {
-  color: #4ade80;
-  background-color: rgba(22, 101, 52, 0.5);
+  color: #55EFC4; /* Lighter teal */
+  background-color: rgba(85, 239, 196, 0.15);
 }
 
 .explanation-text {
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: #6b7280;
-  font-style: italic;
+  color: #777; /* Lighter grey */
+  font-style: normal; /* Remove italic */
 }
 
 .dark .explanation-text {
-  color: #9ca3af;
+  color: #aaa;
 }
 
 .apply-button {
   margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #4f46e5;
-  color: white;
-  font-size: 0.875rem;
+  padding: 0.4rem 0.9rem; /* Slightly smaller padding */
+  background-color: transparent; /* Transparent background */
+  color: #E17055; /* Peach color */
+  font-size: 0.8rem; /* Smaller font */
   font-weight: 500;
-  border-radius: 0.375rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transition: background-color 0.15s ease-in-out;
+  border-radius: 0.3rem;
+  border: 1px solid #FF9A8B; /* Peach border */
+  box-shadow: none; /* Remove shadow */
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   white-space: nowrap;
   align-self: flex-start;
 }
 
 .apply-button:hover {
-  background-color: #4338ca;
+  background-color: rgba(255, 154, 139, 0.1); /* Subtle peach background on hover */
+  border-color: #E17055; /* Darker peach border */
+  color: #D63031; /* Darker coral text */
 }
 
 .dark .apply-button {
-  background-color: #6366f1;
+  color: #FFB3A7; /* Lighter peach */
+  border-color: #FF9A8B;
 }
 
 .dark .apply-button:hover {
-  background-color: #4f46e5;
+  background-color: rgba(255, 179, 167, 0.15);
+  border-color: #FFB3A7;
+  color: #FFD6CC; /* Lighter text */
 }
 
-.apply-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+/* Focus state removed from here, handled globally later */
+
+/* Adjust the SVG icon within the success message */
+.success-message svg {
+  width: 1.4rem; /* Larger icon */
+  height: 1.4rem;
+  margin-right: 0.4rem; /* More space */
+  color: #00A884; /* Match text color */
 }
 
-.success-message {
-  text-align: center;
-  padding: 1.5rem 0;
-  transition: opacity 0.5s ease-in-out;
-  color: #16a34a;
-  font-weight: 500;
+.dark .success-message svg {
+  color: #50E3C2; /* Match dark text color */
 }
 
-.dark .success-message {
-  color: #4ade80;
-}
-
+/* Synonym popup improvements */
 .synonym-popup {
   position: absolute;
   z-index: 10;
   width: 12rem;
-  border-radius: 0.375rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem; /* More rounded */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Softer shadow */
+  background-color: rgba(255, 255, 255, 0.85); /* More transparent */
+  border: 1px solid rgba(255, 154, 139, 0.2); /* Subtle peach border */
   padding: 0.5rem;
   font-size: 0.875rem;
-  transition: opacity 0.15s;
+  transition: opacity 0.2s, transform 0.2s;
+  transform-origin: top left;
+  backdrop-filter: blur(8px); /* Stronger blur */
 }
 
 .dark .synonym-popup {
-  background-color: #262626;
-  border-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(45, 42, 42, 0.85);
+  border-color: rgba(75, 63, 63, 0.4);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .synonym-header {
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.25rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500; /* Medium weight */
+  color: #444;
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 154, 139, 0.2); /* Subtle peach border */
 }
 
 .dark .synonym-header {
-  color: #e5e7eb;
-  border-color: #404040;
+  color: #ddd;
+  border-color: rgba(75, 63, 63, 0.4);
 }
 
-.synonym-loading {
-  color: #6b7280;
+.synonym-loading,
+.synonym-empty {
+  color: #888;
+  padding: 0.5rem 0; /* Add padding */
 }
 
-.dark .synonym-loading {
-  color: #9ca3af;
+.dark .synonym-loading,
+.dark .synonym-empty {
+  color: #aaa;
 }
 
 .synonym-error {
-  color: #dc2626;
+  color: #D63031; /* Coral red */
+  padding: 0.5rem 0;
 }
 
 .dark .synonym-error {
-  color: #f87171;
-}
-
-.synonym-empty {
-  color: #6b7280;
-}
-
-.dark .synonym-empty {
-  color: #9ca3af;
+  color: #FF8787;
 }
 
 .synonym-list {
@@ -455,11 +467,23 @@
 }
 
 .synonym-item {
-  color: #4b5563;
+  color: #555;
+  padding: 0.25rem 0.5rem; /* Adjust padding */
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .dark .synonym-item {
-  color: #d1d5db;
+  color: #ccc;
+}
+
+.synonym-item:hover {
+  background-color: rgba(255, 154, 139, 0.1); /* Subtle peach hover */
+}
+
+.dark .synonym-item:hover {
+  background-color: rgba(255, 179, 167, 0.15);
 }
 
 @keyframes pulse {
@@ -554,16 +578,35 @@
   transition: background-color 0.2s;
 }
 
-/* Focus states */
+/* Global Focus states using outline for better accessibility */
 .text-area:focus,
 .apply-button:focus,
-.theme-toggle:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+.theme-toggle:focus,
+select:focus { /* Added select */
+  outline: 2px solid #FF9A8B; /* Peach outline */
+  outline-offset: 2px;
+  box-shadow: none; /* Remove box-shadow focus */
 }
 
 .dark .text-area:focus,
 .dark .apply-button:focus,
-.dark .theme-toggle:focus {
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+.dark .theme-toggle:focus,
+.dark select:focus {
+  outline-color: #FFB3A7; /* Lighter peach outline */
+}
+
+/* Ensure select dropdown matches theme */
+select {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid #FAD0C4;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  color: #4A4A4A;
+  transition: all 0.2s;
+}
+
+.dark select {
+  background-color: rgba(45, 42, 42, 0.6);
+  border-color: #4B3F3F;
+  color: #EAEAEA;
 }
