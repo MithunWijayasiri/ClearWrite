@@ -260,6 +260,37 @@ const ClearWritePage = () => {
     debouncedCheckGrammar(newText, selectedLanguage);
   };
 
+  // Apply all suggestions to text
+  const applyAllSuggestions = () => {
+    if (suggestions.length === 0) return;
+    
+    let newText = text;
+    let offsetAdjustment = 0;
+    
+    // Sort suggestions by offset to handle them in order
+    const sortedSuggestions = [...suggestions].sort((a, b) => a.offset - b.offset);
+    
+    sortedSuggestions.forEach(suggestion => {
+      if (suggestion.suggestion === 'N/A') return;
+      
+      const adjustedOffset = suggestion.offset + offsetAdjustment;
+      newText = newText.substring(0, adjustedOffset) + 
+                suggestion.suggestion + 
+                newText.substring(adjustedOffset + suggestion.length);
+      
+      // Update offset adjustment for subsequent suggestions
+      offsetAdjustment += suggestion.suggestion.length - suggestion.length;
+    });
+    
+    setText(newText);
+    setSuggestions([]);
+    setSynonymPopupState(prev => ({ ...prev, visible: false, word: null }));
+    hoveredWordRef.current = null;
+    
+    // Recheck grammar after applying all suggestions
+    debouncedCheckGrammar(newText, selectedLanguage);
+  };
+
   // Handle word hover for synonyms
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLTextAreaElement>) => {
     if (!textareaRef.current) return;
@@ -467,11 +498,21 @@ const ClearWritePage = () => {
 
           {/* Grammar Suggestions List */}
           <div className="space-y-2 pt-2">
-            <h2 className={`suggestion-heading transition-all duration-200 ${
-              shouldShowSuggestions ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
-            }`}>
-              Suggestions ({suggestions.length})
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className={`suggestion-heading transition-all duration-200 ${
+                shouldShowSuggestions ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
+              }`}>
+                Suggestions ({suggestions.length})
+              </h2>
+              {shouldShowSuggestions && (
+                <button
+                  onClick={applyAllSuggestions}
+                  className="apply-all-button text-sm px-3 py-1 rounded-md transition-colors"
+                >
+                  Apply All Fixes
+                </button>
+              )}
+            </div>
             
             <ul className={`suggestion-list transition-opacity duration-200 ${
               isLoadingGrammar ? 'opacity-50' : 'opacity-100'

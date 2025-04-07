@@ -673,3 +673,27 @@ main {
   color: var(--primary-color-hover);
   text-decoration: underline;
 }
+
+.apply-all-button {
+  background-color: #FF9A8B; /* Peach background */
+  color: white;
+  border: 1px solid #FF9A8B;
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.apply-all-button:hover {
+  background-color: #E17055; /* Darker peach on hover */
+  border-color: #E17055;
+}
+
+.dark .apply-all-button {
+  background-color: #FFB3A7; /* Lighter peach in dark mode */
+  border-color: #FFB3A7;
+  color: #2D2A2A; /* Dark text */
+}
+
+.dark .apply-all-button:hover {
+  background-color: #FF9A8B;
+  border-color: #FF9A8B;
+}
