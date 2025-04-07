@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { debounce } from 'lodash';
 import './App.css';
+import Footer from './components/Footer';
 
 // Enhanced Interfaces
 interface ApiReplacement {
@@ -630,6 +631,7 @@ const ClearWritePage = () => {
           )}
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

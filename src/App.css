@@ -640,3 +640,36 @@ main {
     margin-top: 1.5rem; /* Less margin on short screens */
   }
 }
+
+/* Footer Styles */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+  font-size: 0.875rem;
+  color: var(--text-color);
+}
+
+.footer-heart {
+  fill: #ff0000;
+  transition: transform 0.3s ease;
+}
+
+.footer-heart:hover {
+  transform: scale(1.2);
+}
+
+.github-icon {
+  fill: currentColor;
+}
+
+.author-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.author-link:hover {
+  color: var(--primary-color-hover);
+  text-decoration: underline;
+}
