@@ -42,8 +42,8 @@
 /* Grammar checker styles */
 .clear-write {
   min-height: 100vh;
-  /* Inspired gradient background */
-  background: linear-gradient(180deg, #FFF0EC 0%, #FFD1C1 100%); /* Lighter pink/peach gradient */
+  /* Modern minimal gradient background */
+  background: linear-gradient(180deg, #FAFAF9 0%, #F5F5F4 100%); /* Soft warm neutral gradient */
   color: #4A4A4A; /* Darker grey for text */
   transition: background 0.3s, color 0.3s;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* Use Inter first */
@@ -53,8 +53,8 @@
 }
 
 .clear-write.dark {
-  /* Darker gradient */
-  background: linear-gradient(180deg, #2D2A2A 0%, #4B3F3F 100%);
+  /* Modern sophisticated dark gradient */
+  background: linear-gradient(180deg, #18181B 0%, #27272A 100%); /* Deep slate charcoal gradient */
   color: #EAEAEA; /* Light grey text */
 }
 
