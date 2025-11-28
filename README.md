@@ -1,67 +1,161 @@
-# ✍️ ClearWrite - Grammar Checker
+# ClearWrite ✍️
 
-![Demo Screenshot](/assets/screenshot.png)
+ClearWrite is an intelligent writing assistant that provides real-time grammar checking, style suggestions, and AI-powered text enhancement and summarization.
 
-ClearWrite is an intelligent writing assistant that provides real-time grammar checking, style suggestions, and vocabulary enhancements. Built with modern web technologies, it helps users craft polished content with confidence by combining LanguageTool's robust proofreading engine with a clean, user-friendly interface.
+## Features
 
-## ✨ Features
+- 📝 **Rich Text Editor** - Powered by TipTap for a smooth writing experience
+- ✅ **Real-time Grammar Checking** - Catch errors as you type
+- 💡 **Style Suggestions** - Improve your writing clarity and tone
+- 🤖 **AI Text Enhancement** - Enhance your text with AI-powered vocabulary and clarity improvements
+- 📋 **AI Summarization** - Get concise summaries of your text
+- ⚙️ **Multiple AI Providers** - Choose between Google Gemini or Longcat AI (server-side)
+- 🔒 **Secure API Keys** - API keys kept safe on server, never exposed to client
+- 🎨 **Modern UI** - Clean, responsive interface built with Tailwind CSS
 
-### 🔍 Smart Proofreading
-- Real-time grammar and spelling correction
-- Punctuation and style suggestions
-- Support for multiple English variants (US/UK) and major languages
+## Tech Stack
 
-### 🛠 Writing Enhancements
-- Context-aware synonym suggestions
-- One-click error correction
-- Detailed explanations for each suggestion
-- Word choice and conciseness tips
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Editor**: TipTap
+- **AI**: Google Gemini AI / Longcat AI (configurable)
+- **Serverless**: Vercel Functions
+- **Icons**: Lucide React
 
-### 🎨 Designed for Focus
-- Clean, distraction-free interface
-- Toggleable dark/light themes
-- Keyboard shortcut support
-- Responsive design for all devices
+## Getting Started
 
-## Available Scripts
+### Prerequisites
 
-In the project directory, you can run:
+- Node.js 18+ 
+- npm or yarn
+- AI Provider API Key (Google Gemini or Longcat)
 
-### `npm start`
+### Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MithunWijayasiri/ClearWrite.git
+   cd ClearWrite
+   ```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-### `npm test`
+3. Create a `.env.local` file in the root directory:
+   
+   **For Gemini (Default):**
+   ```env
+   AI_PROVIDER=gemini
+   GEMINI_API_KEY=your_gemini_api_key_here
+   GEMINI_MODEL=gemini-2.5-flash
+   ```
+   
+   **For Longcat:**
+   ```env
+   AI_PROVIDER=longcat
+   LONGCAT_API_KEY=your_longcat_api_key_here
+   LONGCAT_MODEL=LongCat-Flash-Chat
+   LONGCAT_ENDPOINT=https://api.longcat.chat/openai
+   ```
+   
+   > **Security Note:** These variables are server-side only and will never be exposed to the client.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+4. Start the development server:
+   ```bash
+   npx vercel dev
+   ```
 
-### `npm run build`
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Environment Variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**All environment variables are server-side only for security.** API keys are never exposed to the client.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Common Variables
 
-### `npm run eject`
+| Variable | Description | Required | Default |
+|----------|-------------|----------|----------|
+| `AI_PROVIDER` | AI provider to use (`gemini` or `longcat`) | No | `gemini` |
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Gemini Configuration
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GEMINI_API_KEY` | Your Google Gemini API key | Yes (if using Gemini) |
+| `GEMINI_MODEL` | The Gemini model to use (e.g., `gemini-2.5-flash`) | Yes (if using Gemini) |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Longcat Configuration
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Variable | Description | Required | Default |
+|----------|-------------|----------|----------|
+| `LONGCAT_API_KEY` | Your Longcat API key | Yes (if using Longcat) | - |
+| `LONGCAT_MODEL` | The Longcat model to use (e.g., `LongCat-Flash-Chat`) | Yes (if using Longcat) | - |
+| `LONGCAT_ENDPOINT` | Longcat API endpoint | No | `https://api.longcat.chat/openai` |
 
-## Learn More
+## Deployment on Vercel
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Push your code to GitHub
+2. Import your repository on [Vercel](https://vercel.com)
+3. Add environment variables in Vercel project settings based on your chosen AI provider:
+   
+   **For Gemini:**
+   - `AI_PROVIDER` - Set to `gemini`
+   - `GEMINI_API_KEY` - Your Google Gemini API key
+   - `GEMINI_MODEL` - The Gemini model name to use
+   
+   **For Longcat:**
+   - `AI_PROVIDER` - Set to `longcat`
+   - `LONGCAT_API_KEY` - Your Longcat API key
+   - `LONGCAT_MODEL` - The Longcat model name
+   - `LONGCAT_ENDPOINT` - (Optional) Custom endpoint URL
+   
+   > **Note:** These are server-side environment variables in Vercel. They will NOT be exposed to the client.
+4. Deploy!
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npx vercel dev` | Start development server with serverless functions |
+| `npm run dev` | Start Vite dev server only (no API) |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## Project Structure
+
+```
+ClearWrite/
+├── api/                 # Vercel serverless functions
+│   └── ai.ts            # AI endpoint (enhance & summarize)
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images and other assets
+│   ├── components/      # React components
+│   │   ├── Editor.tsx   # Main editor component
+│   │   └── Sidebar.tsx  # Sidebar component
+│   ├── services/        # API services
+│   │   ├── aiService.ts # Client-side API calls to serverless functions
+│   │   └── grammarService.ts # Grammar checking
+│   ├── App.tsx          # Main App component
+│   ├── index.css        # Global styles
+│   ├── index.tsx        # Entry point
+│   └── types.ts         # TypeScript types
+├── .env.local           # Environment variables (not committed)
+├── package.json
+├── tailwind.config.js
+├── tsconfig.json
+├── vercel.json          # Vercel configuration
+└── vite.config.ts
+```
+
+## License
+
+MIT License - feel free to use this project for your own purposes.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
