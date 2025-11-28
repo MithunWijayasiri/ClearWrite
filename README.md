@@ -1,67 +1,112 @@
-# ✍️ ClearWrite - Grammar Checker
+# ClearWrite ✍️
 
-![Demo Screenshot](/assets/screenshot.png)
+ClearWrite is an intelligent writing assistant that provides real-time grammar checking, style suggestions, and AI-powered text enhancement and summarization.
 
-ClearWrite is an intelligent writing assistant that provides real-time grammar checking, style suggestions, and vocabulary enhancements. Built with modern web technologies, it helps users craft polished content with confidence by combining LanguageTool's robust proofreading engine with a clean, user-friendly interface.
+## Features
 
-## ✨ Features
+- 📝 **Rich Text Editor** - Powered by TipTap for a smooth writing experience
+- ✅ **Real-time Grammar Checking** - Catch errors as you type
+- 💡 **Style Suggestions** - Improve your writing clarity and tone
+- 🤖 **AI Text Enhancement** - Enhance your text with AI-powered vocabulary and clarity improvements
+- 📋 **AI Summarization** - Get concise summaries of your text
+- 🎨 **Modern UI** - Clean, responsive interface built with Tailwind CSS
 
-### 🔍 Smart Proofreading
-- Real-time grammar and spelling correction
-- Punctuation and style suggestions
-- Support for multiple English variants (US/UK) and major languages
+## Tech Stack
 
-### 🛠 Writing Enhancements
-- Context-aware synonym suggestions
-- One-click error correction
-- Detailed explanations for each suggestion
-- Word choice and conciseness tips
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Editor**: TipTap
+- **AI**: Google Gemini AI
+- **Icons**: Lucide React
 
-### 🎨 Designed for Focus
-- Clean, distraction-free interface
-- Toggleable dark/light themes
-- Keyboard shortcut support
-- Responsive design for all devices
+## Getting Started
 
-## Available Scripts
+### Prerequisites
 
-In the project directory, you can run:
+- Node.js 18+ 
+- npm or yarn
+- Google Gemini API Key
 
-### `npm start`
+### Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MithunWijayasiri/ClearWrite.git
+   cd ClearWrite
+   ```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-### `npm test`
+3. Create a `.env.local` file in the root directory:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   GEMINI_MODEL=gemini-2.5-flash
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-### `npm run build`
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Environment Variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GEMINI_API_KEY` | Your Google Gemini API key | Yes |
+| `GEMINI_MODEL` | The Gemini model to use (e.g., `gemini-2.5-flash`) | Yes |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Deployment on Vercel
 
-### `npm run eject`
+1. Push your code to GitHub
+2. Import your repository on [Vercel](https://vercel.com)
+3. Add the following environment variables in Vercel project settings:
+   - `GEMINI_API_KEY` - Your Google Gemini API key
+   - `GEMINI_MODEL` - The model name (e.g., `gemini-2.5-flash`)
+4. Deploy!
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Scripts
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Project Structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+ClearWrite/
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images and other assets
+│   ├── components/      # React components
+│   │   ├── Editor.tsx   # Main editor component
+│   │   └── Sidebar.tsx  # Sidebar component
+│   ├── services/        # API services
+│   │   ├── aiService.ts # Gemini AI integration
+│   │   └── grammarService.ts # Grammar checking
+│   ├── App.tsx          # Main App component
+│   ├── index.css        # Global styles
+│   ├── index.tsx        # Entry point
+│   └── types.ts         # TypeScript types
+├── .env.local           # Environment variables (not committed)
+├── package.json
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.ts
+```
 
-## Learn More
+## License
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+MIT License - feel free to use this project for your own purposes.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
