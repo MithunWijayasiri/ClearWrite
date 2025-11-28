@@ -1,5 +1,7 @@
 # ClearWrite ✍️
 
+<img width="1920" height="921" alt="image" src="https://github.com/user-attachments/assets/473bc089-bf88-46a6-9010-8079fd0fd626" />
+</br></br>
 ClearWrite is an intelligent writing assistant that provides real-time grammar checking, style suggestions, and AI-powered text enhancement and summarization.
 
 ## Features
