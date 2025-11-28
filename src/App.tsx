@@ -13,6 +13,7 @@ function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isCopied, setIsCopied] = useState(false);
   const [activeErrorId, setActiveErrorId] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
   const [editorAction, setEditorAction] = useState<{ 
     type: 'fix' | 'enhance' | 'summarize' | 'fixAll' | 'scroll' | 'copy', 
     payload?: any 
@@ -50,6 +51,11 @@ function App() {
     setEditorAction({ type: 'summarize' });
   };
 
+  const handleAIError = (message: string) => {
+    setNotification({ message, type: 'error' });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
   const handleScrollToError = (from: number) => {
     setEditorAction({ type: 'scroll', payload: from });
   };
@@ -85,7 +91,12 @@ function App() {
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
             <div className="w-px h-4 bg-text/10 mx-1"></div>
-            <a href="#" className="hover:text-text transition-colors flex items-center gap-2">
+            <a
+              href="https://github.com/MithunWijayasiri/ClearWrite"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-text transition-colors flex items-center gap-2"
+            >
               <Github size={16} />
             </a>
           </div>
@@ -93,7 +104,7 @@ function App() {
 
         {/* Editor Container - Removing overflow-y-auto here to let Editor handle it with line numbers */}
         <div className="flex-1 overflow-hidden relative">
-          <div className="max-w-4xl mx-auto h-full">
+          <div className="max-w-7xl mx-auto h-full">
             <Editor 
               onStatsUpdate={setStats} 
               onErrorsUpdate={setErrors}
@@ -102,9 +113,21 @@ function App() {
               externalAction={editorAction}
               onActionComplete={handleActionComplete}
               onErrorClick={handleErrorClick}
+              onAIError={handleAIError}
             />
           </div>
         </div>
+
+        {/* Notification Toast */}
+        {notification && (
+          <div className={`absolute bottom-12 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-300 ${
+            notification.type === 'error' 
+              ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
+              : 'bg-green-500/10 text-green-400 border border-green-500/20'
+          }`}>
+            {notification.message}
+          </div>
+        )}
 
         {/* Status Bar */}
         <footer className="h-8 border-t border-text/10 bg-background flex items-center justify-between px-6 text-[10px] font-mono text-gray-500 uppercase tracking-wider transition-colors">

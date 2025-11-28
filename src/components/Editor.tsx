@@ -63,6 +63,7 @@ interface EditorProps {
   externalAction: { type: 'fix' | 'enhance' | 'summarize' | 'fixAll' | 'scroll' | 'copy', payload?: any } | null;
   onActionComplete: () => void;
   onErrorClick: (id: string | null) => void;
+  onAIError: (message: string) => void;
 }
 
 export const Editor: React.FC<EditorProps> = ({ 
@@ -72,7 +73,8 @@ export const Editor: React.FC<EditorProps> = ({
   setProcessingState,
   externalAction,
   onActionComplete,
-  onErrorClick
+  onErrorClick,
+  onAIError
 }) => {
   const [content, setContent] = useState('');
   const [matches, setMatches] = useState<GrammarMatch[]>([]);
@@ -265,8 +267,9 @@ export const Editor: React.FC<EditorProps> = ({
              const enhanced = await enhanceText(currentText);
              editor.commands.setContent(enhanced);
           }
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
+          onAIError(e.name === 'AIProviderError' ? 'AI provider not configured' : 'Failed to enhance text');
         } finally {
           setProcessingState(null);
           onActionComplete();
@@ -289,8 +292,9 @@ export const Editor: React.FC<EditorProps> = ({
                const summary = await summarizeText(currentText);
                editor.commands.setContent(summary);
             }
-          } catch (e) {
+          } catch (e: any) {
             console.error(e);
+            onAIError(e.name === 'AIProviderError' ? 'AI provider not configured' : 'Failed to summarize text');
           } finally {
             setProcessingState(null);
             onActionComplete();

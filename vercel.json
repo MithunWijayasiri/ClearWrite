@@ -1,0 +1,10 @@
+{
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "devCommand": "vite --port 3000",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" }
+  ]
+}

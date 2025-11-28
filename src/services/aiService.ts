@@ -1,33 +1,42 @@
-import { GoogleGenAI } from "@google/genai";
+// AI Service - Calls backend API to securely interact with AI providers
 
-const apiKey = process.env.GEMINI_API_KEY || '';
-const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-const ai = new GoogleGenAI({ apiKey });
+// Returns a generic name since provider is determined server-side
+export const getActiveProviderName = (): string => {
+  return 'AI';
+};
+
+export class AIProviderError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AIProviderError';
+  }
+}
+
+const API_ENDPOINT = '/api/ai';
+
+async function callAI(action: 'enhance' | 'summarize', text: string): Promise<string> {
+  const response = await fetch(API_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action, text }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new AIProviderError(errorData.error || 'AI service unavailable');
+  }
+
+  const data = await response.json();
+  return data.result;
+}
 
 export const enhanceText = async (text: string): Promise<string> => {
   if (!text || text.trim().length === 0) return text;
-  
-  if (!apiKey) {
-    console.warn("No API Key provided for Gemini.");
-    return "API Key missing. Cannot enhance text.";
-  }
 
   try {
-    const prompt = `
-      You are a professional editor. Rewrite the following text to improve vocabulary, 
-      clarity, and tone while STRICTLY maintaining the original meaning. 
-      Do not add conversational filler. Return ONLY the rewritten text.
-      
-      Original Text:
-      "${text}"
-    `;
-
-    const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-    });
-
-    return response.text?.trim() || text;
+    return await callAI('enhance', text);
   } catch (error) {
     console.error("AI Enhancement Error:", error);
     throw error;
@@ -37,26 +46,8 @@ export const enhanceText = async (text: string): Promise<string> => {
 export const summarizeText = async (text: string): Promise<string> => {
   if (!text || text.trim().length === 0) return text;
 
-  if (!apiKey) {
-    console.warn("No API Key provided for Gemini.");
-    return "API Key missing. Cannot summarize text.";
-  }
-
   try {
-    const prompt = `
-      You are a professional editor. Summarize the following text concisely 
-      while retaining the key points. Return ONLY the summary.
-      
-      Original Text:
-      "${text}"
-    `;
-
-    const response = await ai.models.generateContent({
-      model,
-      contents: prompt,
-    });
-
-    return response.text?.trim() || text;
+    return await callAI('summarize', text);
   } catch (error) {
     console.error("AI Summarization Error:", error);
     throw error;

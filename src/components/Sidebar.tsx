@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SidebarErrorItem } from '../types';
 import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText } from 'lucide-react';
 import { ProcessingState } from '../App';
+import { getActiveProviderName } from '../services/aiService';
 
 interface SidebarProps {
   errors: SidebarErrorItem[];
@@ -21,9 +22,9 @@ const WavyText = ({ text }: { text: string }) => {
         <span
           key={index}
           className="animate-pulse"
-          style={{ 
+          style={{
             animationDelay: `${index * 100}ms`,
-            animationDuration: '1.5s' 
+            animationDuration: '1.5s'
           }}
         >
           {char === ' ' ? '\u00A0' : char}
@@ -44,6 +45,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeErrorId
 }) => {
   const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [providerName, setProviderName] = useState<string>('');
+
+  useEffect(() => {
+    // Provider is determined server-side, so we use a generic name
+    setProviderName(getActiveProviderName());
+  }, []);
 
   useEffect(() => {
     if (activeErrorId && itemRefs.current[activeErrorId]) {
@@ -65,18 +72,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-text/50 mb-4">
           Assistant
         </h2>
-        
+
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={onEnhance}
             disabled={isBusy}
-            className={`flex items-center justify-center gap-2 py-3 px-2 font-mono text-xs border transition-all duration-200 ${
-              isBusy && !isEnhancing
+            className={`flex items-center justify-center gap-2 py-3 px-2 font-mono text-xs border transition-all duration-200 ${isBusy && !isEnhancing
                 ? 'opacity-50 cursor-not-allowed border-text/5'
                 : isEnhancing
                   ? 'border-accent text-accent bg-accent/5'
                   : 'border-text/20 text-text hover:bg-text hover:text-background hover:border-transparent active:scale-[0.98]'
-            }`}
+              }`}
             title="Improve vocabulary and tone"
           >
             <Wand2 size={14} className={isEnhancing ? "text-accent" : ""} />
@@ -86,13 +92,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={onSummarize}
             disabled={isBusy}
-            className={`flex items-center justify-center gap-2 py-3 px-2 font-mono text-xs border transition-all duration-200 ${
-              isBusy && !isSummarizing
+            className={`flex items-center justify-center gap-2 py-3 px-2 font-mono text-xs border transition-all duration-200 ${isBusy && !isSummarizing
                 ? 'opacity-50 cursor-not-allowed border-text/5'
                 : isSummarizing
                   ? 'border-accent text-accent bg-accent/5'
                   : 'border-text/20 text-text hover:bg-text hover:text-background hover:border-transparent active:scale-[0.98]'
-            }`}
+              }`}
             title="Summarize text"
           >
             <FileText size={14} className={isSummarizing ? "text-accent" : ""} />
@@ -121,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {errors.length === 0 ? (
           <div className="text-center py-10 text-text/30 font-mono text-sm">
             <div className="flex justify-center mb-2 opacity-50">
-               <CheckCheck size={24} />
+              <CheckCheck size={24} />
             </div>
             All clear.
           </div>
@@ -129,14 +134,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           errors.map((error) => {
             const isActive = error.id === activeErrorId;
             return (
-              <div 
+              <div
                 key={error.id}
                 ref={el => { itemRefs.current[error.id] = el }}
-                className={`rounded border p-3 transition-all duration-200 cursor-pointer ${
-                  isActive 
-                    ? 'bg-text/10 border-accent shadow-sm scale-[1.02]' 
+                className={`rounded border p-3 transition-all duration-200 cursor-pointer ${isActive
+                    ? 'bg-text/10 border-accent shadow-sm scale-[1.02]'
                     : 'bg-background/50 border-text/5 hover:border-text/20'
-                }`}
+                  }`}
                 onClick={() => onScrollToError(error.from)}
               >
                 <div className="flex items-start gap-2 mb-2">
@@ -175,11 +179,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })
         )}
       </div>
-      
+
       <div className="p-4 border-t border-text/10 text-center shrink-0">
-         <p className="text-[10px] text-text/40 font-mono">
-            Powered by LanguageTool & Gemini
-         </p>
+        <p className="text-[10px] text-text/40 font-mono">
+          Powered by LanguageTool & {providerName}
+        </p>
       </div>
     </aside>
   );
