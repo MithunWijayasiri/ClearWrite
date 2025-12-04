@@ -47,6 +47,8 @@
   font-size: var(--editor-font-size);
   line-height: var(--editor-line-height);
   color: rgb(var(--color-text));
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Enforce zero margins on paragraphs to align with line number grid */

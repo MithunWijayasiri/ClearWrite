@@ -78,7 +78,7 @@ function App() {
 
       <div className="flex-1 flex overflow-hidden relative">
         {/* Main Content Area (Left) */}
-        <main className={`flex-1 flex flex-col relative ${activeTab === 'assistant' ? 'hidden md:flex' : 'flex'}`}>
+        <main className={`flex-1 flex flex-col relative min-w-0 ${activeTab === 'assistant' ? 'hidden md:flex' : 'flex'}`}>
           {/* Minimal Header */}
           <header className="h-14 border-b border-text/10 flex items-center justify-between px-4 md:px-6 bg-background/80 backdrop-blur-sm z-10 transition-colors shrink-0">
             <div className="flex items-center gap-3">
