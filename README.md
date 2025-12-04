@@ -11,6 +11,8 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 - 💡 **Style Suggestions** - Improve your writing clarity and tone
 - 🤖 **AI Text Enhancement** - Enhance your text with AI-powered vocabulary and clarity improvements
 - 📋 **AI Summarization** - Get concise summaries of your text
+- 🛡️ **Privacy Focused** - Grammar checking is proxied via your own backend to protect user data
+- ⚡ **Rate Limiting** - Built-in protection against API abuse
 - ⚙️ **Multiple AI Providers** - Choose between Google Gemini or Longcat AI (server-side)
 - 🔒 **Secure API Keys** - API keys kept safe on server, never exposed to client
 - 🎨 **Modern UI** - Clean, responsive interface built with Tailwind CSS
@@ -52,7 +54,7 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
    ```env
    AI_PROVIDER=gemini
    GEMINI_API_KEY=your_gemini_api_key_here
-   GEMINI_MODEL=gemini-2.5-flash
+   GEMINI_MODEL=gemini-2.0-flash-exp
    ```
    
    **For Longcat:**
@@ -132,7 +134,8 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 ```
 ClearWrite/
 ├── api/                 # Vercel serverless functions
-│   └── ai.ts            # AI endpoint (enhance & summarize)
+│   ├── ai.ts            # AI endpoint (enhance & summarize)
+│   └── grammar.ts       # Grammar checking proxy (privacy & rate limits)
 ├── public/              # Static assets
 ├── src/
 │   ├── assets/          # Images and other assets

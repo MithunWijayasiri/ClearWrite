@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SidebarErrorItem } from '../types';
 import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText } from 'lucide-react';
 import { ProcessingState } from '../App';
-import { getActiveProviderName } from '../services/aiService';
 
 interface SidebarProps {
   errors: SidebarErrorItem[];
@@ -45,12 +44,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeErrorId
 }) => {
   const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const [providerName, setProviderName] = useState<string>('');
-
-  useEffect(() => {
-    // Provider is determined server-side, so we use a generic name
-    setProviderName(getActiveProviderName());
-  }, []);
 
   useEffect(() => {
     if (activeErrorId && itemRefs.current[activeErrorId]) {
@@ -182,7 +175,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="p-4 border-t border-text/10 text-center shrink-0">
         <p className="text-[10px] text-text/40 font-mono">
-          Powered by LanguageTool & {providerName}
+          Powered by LanguageTool & AI
         </p>
       </div>
     </aside>

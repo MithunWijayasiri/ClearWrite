@@ -1,10 +1,5 @@
 // AI Service - Calls backend API to securely interact with AI providers
 
-// Returns a generic name since provider is determined server-side
-export const getActiveProviderName = (): string => {
-  return 'AI';
-};
-
 export class AIProviderError extends Error {
   constructor(message: string) {
     super(message);
