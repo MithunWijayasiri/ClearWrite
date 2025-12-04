@@ -6,10 +6,9 @@ import { Highlight } from '@tiptap/extension-highlight';
 import { checkGrammar } from '../services/grammarService';
 import { enhanceText, summarizeText } from '../services/aiService';
 import { GrammarMatch, SidebarErrorItem, EditorStats } from '../types';
-import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { Node as PMNode } from '@tiptap/pm/model';
 import { ProcessingState } from '../App';
 import { SelectionToolbar } from './SelectionToolbar';
+import { GrammarExtension, grammarPluginKey } from '../extensions/GrammarExtension';
 
 // Debounce helper
 const useDebounce = (effect: () => void, dependencies: any[], delay: number) => {
@@ -18,42 +17,6 @@ const useDebounce = (effect: () => void, dependencies: any[], delay: number) => 
     const timeout = setTimeout(callback, delay);
     return () => clearTimeout(timeout);
   }, [callback, delay]);
-};
-
-const textOffsetToPos = (doc: PMNode, offset: number): number => {
-  let currentTextOffset = 0;
-  let targetPos = 0;
-  let found = false;
-
-  doc.descendants((node, pos) => {
-    if (found) return false;
-
-    if (node.isText) {
-      const len = node.text?.length || 0;
-      if (offset >= currentTextOffset && offset <= currentTextOffset + len) {
-        targetPos = pos + (offset - currentTextOffset);
-        found = true;
-        return false;
-      }
-      currentTextOffset += len;
-    } else if (node.isBlock) {
-      if (currentTextOffset > 0) {
-        currentTextOffset += 1;
-        if (offset === currentTextOffset - 1) {
-          targetPos = pos;
-          found = true;
-          return false;
-        }
-      }
-    }
-    return true;
-  });
-
-  if (!found) {
-    return doc.content.size - 1;
-  }
-
-  return targetPos;
 };
 
 interface EditorProps {
@@ -78,7 +41,6 @@ export const Editor: React.FC<EditorProps> = ({
   onAIError
 }) => {
   const [content, setContent] = useState('');
-  const [matches, setMatches] = useState<GrammarMatch[]>([]);
   const [visualLineCount, setVisualLineCount] = useState(1);
   const [selectionCoords, setSelectionCoords] = useState<{ top: number; left: number } | null>(null);
   const isCheckingRef = useRef(false);
@@ -91,34 +53,16 @@ export const Editor: React.FC<EditorProps> = ({
       StarterKit,
       TextStyle,
       Highlight.configure({ multicolor: true }),
+      GrammarExtension.configure({
+        onErrorsUpdate: (errors) => {
+          onErrorsUpdate(errors);
+        }
+      }),
     ],
     editorProps: {
       attributes: {
-        // Removed prose classes to ensure strict grid alignment for line numbers.
-        // Using global CSS variables defined in index.html for sizing.
-        // Removed min-h to allow height to be determined exactly by content for line counts.
         class: 'focus:outline-none',
         spellcheck: 'false',
-      },
-      decorations(state) {
-        const { doc } = state;
-        const decorations: Decoration[] = [];
-
-        matches.forEach((match, idx) => {
-          const from = textOffsetToPos(doc, match.offset);
-          const to = textOffsetToPos(doc, match.offset + match.length);
-
-          if (to <= doc.content.size) {
-            decorations.push(
-              Decoration.inline(from, to, {
-                class: match.rule.issueType === 'misspelling' ? 'grammar-error' : 'grammar-warning',
-                'data-error-id': `${match.offset}-${match.rule.id}-${idx}`,
-              })
-            );
-          }
-        });
-
-        return DecorationSet.create(doc, decorations);
       },
       handleClick(view, pos, event) {
         const target = event.target as HTMLElement;
@@ -203,7 +147,7 @@ export const Editor: React.FC<EditorProps> = ({
 
       const text = editor.getText();
       if (text.length < 2) {
-        setMatches([]);
+        editor.commands.setGrammarMatches([]);
         onErrorsUpdate([]);
         return;
       }
@@ -212,31 +156,7 @@ export const Editor: React.FC<EditorProps> = ({
       const foundMatches = await checkGrammar(text);
       isCheckingRef.current = false;
 
-      const doc = editor.state.doc;
-      const validMatches = foundMatches.filter(m => {
-        const to = textOffsetToPos(doc, m.offset + m.length);
-        return to <= doc.content.size;
-      });
-
-      setMatches(validMatches);
-
-      const sidebarItems: SidebarErrorItem[] = validMatches.map((m, idx) => {
-        const fromPos = textOffsetToPos(doc, m.offset);
-        const toPos = textOffsetToPos(doc, m.offset + m.length);
-
-        return {
-          id: `${m.offset}-${m.rule.id}-${idx}`,
-          from: fromPos,
-          to: toPos,
-          message: m.shortMessage || m.message,
-          replacements: m.replacements.map(r => r.value),
-          context: text.substring(Math.max(0, m.offset - 10), Math.min(text.length, m.offset + m.length + 10)),
-          type: m.rule.issueType === 'misspelling' ? 'error' : 'warning',
-        };
-      });
-
-      onErrorsUpdate(sidebarItems);
-      editor.view.dispatch(editor.state.tr);
+      editor.commands.setGrammarMatches(foundMatches);
     };
 
     runCheck();
@@ -253,22 +173,35 @@ export const Editor: React.FC<EditorProps> = ({
 
     if (externalAction.type === 'fix') {
       const { error, replacement } = externalAction.payload;
-      editor.chain().focus().setTextSelection({ from: error.from, to: error.to }).insertContent(replacement).run();
-      setMatches(prev => prev.filter((m, idx) => `${m.offset}-${m.rule.id}-${idx}` !== error.id));
+
+      let targetFrom = error.from;
+      let targetTo = error.to;
+      const { id } = error;
+
+      const pluginState = grammarPluginKey.getState(editor.state);
+      if (pluginState) {
+          const decorations = pluginState.find();
+          const currentDeco = decorations.find((d: any) => d.spec.originalId === id);
+          if (currentDeco) {
+              targetFrom = currentDeco.from;
+              targetTo = currentDeco.to;
+          }
+      }
+
+      editor.chain().focus().setTextSelection({ from: targetFrom, to: targetTo }).insertContent(replacement).run();
       onActionComplete();
     }
 
     if (externalAction.type === 'fixAll') {
-      const sortedErrors = [...externalAction.payload.errors].sort((a, b) => b.from - a.from);
+      const sortedErrors = [...externalAction.payload.errors].sort((a: SidebarErrorItem, b: SidebarErrorItem) => b.from - a.from);
       const chain = editor.chain().focus();
+
       sortedErrors.forEach((error: SidebarErrorItem) => {
         if (error.replacements.length > 0) {
-          chain.setTextSelection({ from: error.from, to: error.to }).insertContent(error.replacements[0]);
+           chain.setTextSelection({ from: error.from, to: error.to }).insertContent(error.replacements[0]);
         }
       });
       chain.run();
-      setMatches([]);
-      onErrorsUpdate([]);
       onActionComplete();
     }
 
