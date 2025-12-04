@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SidebarErrorItem } from '../types';
-import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText } from 'lucide-react';
+import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText, Settings } from 'lucide-react';
 import { ProcessingState } from '../App';
 import { getActiveProviderName } from '../services/aiService';
 
@@ -61,6 +61,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [activeErrorId]);
 
+  const handleSettings = () => {
+    const currentPass = localStorage.getItem('app_password') || '';
+    const newPass = window.prompt('Enter App Password (for AI features):', currentPass);
+    if (newPass !== null) {
+      localStorage.setItem('app_password', newPass);
+    }
+  };
+
   const isEnhancing = processingState === 'enhance';
   const isSummarizing = processingState === 'summarize';
   const isBusy = processingState !== null;
@@ -69,9 +77,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-full h-full flex flex-col bg-surface border-l border-text/10 transition-colors duration-300">
       {/* Header */}
       <div className="p-6 border-b border-text/10 shrink-0">
-        <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-text/50 mb-4">
-          Assistant
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-text/50">
+            Assistant
+          </h2>
+          <button
+            onClick={handleSettings}
+            className="text-text/30 hover:text-text/70 transition-colors"
+            title="AI Settings"
+          >
+            <Settings size={14} />
+          </button>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <button

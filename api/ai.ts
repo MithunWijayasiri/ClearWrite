@@ -90,11 +90,28 @@ Original Text:
 "${text}"`;
 }
 
+// Rate Limit Configuration
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 20; // 20 requests per minute for AI
+const requestLog: number[] = [];
+
+function checkRateLimit(): boolean {
+  const now = Date.now();
+  while (requestLog.length > 0 && requestLog[0] < now - RATE_LIMIT_WINDOW) {
+    requestLog.shift();
+  }
+  if (requestLog.length >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+  requestLog.push(now);
+  return true;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-app-password');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -104,7 +121,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Rate Limit Check
+  if (!checkRateLimit()) {
+    return res.status(429).json({ error: 'Too many requests. Please slow down.' });
+  }
+
   try {
+    // Security: Check for App Password if configured
+    const appPassword = process.env.APP_PASSWORD;
+    if (appPassword) {
+      const providedPassword = req.headers['x-app-password'];
+      if (providedPassword !== appPassword) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid App Password' });
+      }
+    }
+
     const { action, text } = req.body as RequestBody;
 
     if (!action || !text) {
