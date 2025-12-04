@@ -1,8 +1,16 @@
-import { Extension } from '@tiptap/core';
+import { Extension, CommandProps } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { GrammarMatch, SidebarErrorItem } from '../types';
 import { textOffsetToPos } from '../utils/editorUtils';
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    grammar: {
+      setGrammarMatches: (matches: GrammarMatch[]) => ReturnType;
+    }
+  }
+}
 
 export const grammarPluginKey = new PluginKey('grammar');
 
@@ -19,7 +27,7 @@ export const GrammarExtension = Extension.create<{
 
   addCommands() {
     return {
-      setGrammarMatches: (matches: GrammarMatch[]) => ({ tr, dispatch }) => {
+      setGrammarMatches: (matches: GrammarMatch[]) => ({ tr, dispatch }: CommandProps) => {
         if (dispatch) {
           tr.setMeta('GRAMMAR_MATCHES', matches);
         }
@@ -83,7 +91,7 @@ export const GrammarExtension = Extension.create<{
                     if (pluginState && (pluginState !== prevPluginState || !view.state.doc.eq(prevState.doc))) {
                         const decorations = pluginState.find();
 
-                        const sidebarItems: SidebarErrorItem[] = decorations.map(deco => {
+                        const sidebarItems: SidebarErrorItem[] = decorations.map((deco: Decoration) => {
                             const match = deco.spec.match as GrammarMatch;
                             const originalId = deco.spec.originalId;
 
