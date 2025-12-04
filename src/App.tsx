@@ -70,11 +70,6 @@ function App() {
   const handleErrorClick = (id: string | null) => {
     setActiveErrorId(id);
     if (id) {
-        // If user clicks an error in editor, show assistant to see details?
-        // Actually, maybe we want to keep them in editor.
-        // But the Sidebar highlights the error.
-        // Let's not auto-switch to assistant on mobile, as it might be annoying.
-        // The user can switch manually.
     }
   };
 
