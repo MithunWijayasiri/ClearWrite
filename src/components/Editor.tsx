@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -9,6 +9,7 @@ import { GrammarMatch, SidebarErrorItem, EditorStats } from '../types';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { Node as PMNode } from '@tiptap/pm/model';
 import { ProcessingState } from '../App';
+import { SelectionToolbar } from './SelectionToolbar';
 
 // Debounce helper
 const useDebounce = (effect: () => void, dependencies: any[], delay: number) => {
@@ -39,9 +40,9 @@ const textOffsetToPos = (doc: PMNode, offset: number): number => {
       if (currentTextOffset > 0) {
         currentTextOffset += 1;
         if (offset === currentTextOffset - 1) {
-            targetPos = pos; 
-            found = true;
-            return false;
+          targetPos = pos;
+          found = true;
+          return false;
         }
       }
     }
@@ -66,8 +67,8 @@ interface EditorProps {
   onAIError: (message: string) => void;
 }
 
-export const Editor: React.FC<EditorProps> = ({ 
-  onStatsUpdate, 
+export const Editor: React.FC<EditorProps> = ({
+  onStatsUpdate,
   onErrorsUpdate,
   processingState,
   setProcessingState,
@@ -79,6 +80,7 @@ export const Editor: React.FC<EditorProps> = ({
   const [content, setContent] = useState('');
   const [matches, setMatches] = useState<GrammarMatch[]>([]);
   const [visualLineCount, setVisualLineCount] = useState(1);
+  const [selectionCoords, setSelectionCoords] = useState<{ top: number; left: number } | null>(null);
   const isCheckingRef = useRef(false);
   const lastActionRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -101,11 +103,11 @@ export const Editor: React.FC<EditorProps> = ({
       decorations(state) {
         const { doc } = state;
         const decorations: Decoration[] = [];
-        
+
         matches.forEach((match, idx) => {
           const from = textOffsetToPos(doc, match.offset);
           const to = textOffsetToPos(doc, match.offset + match.length);
-          
+
           if (to <= doc.content.size) {
             decorations.push(
               Decoration.inline(from, to, {
@@ -121,7 +123,7 @@ export const Editor: React.FC<EditorProps> = ({
       handleClick(view, pos, event) {
         const target = event.target as HTMLElement;
         const errorId = target.closest('.grammar-error, .grammar-warning')?.getAttribute('data-error-id');
-        
+
         if (errorId) {
           onErrorClick(errorId);
         } else {
@@ -133,10 +135,27 @@ export const Editor: React.FC<EditorProps> = ({
     onUpdate: ({ editor }) => {
       const text = editor.getText();
       setContent(text);
-      
+
       const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
       const characters = text.length;
       onStatsUpdate({ words, characters });
+    },
+    onSelectionUpdate: ({ editor }) => {
+      const { from, to, empty } = editor.state.selection;
+      if (!empty && containerRef.current) {
+        const { view } = editor;
+        const start = view.coordsAtPos(from);
+        const end = view.coordsAtPos(to);
+        const containerRect = containerRef.current.getBoundingClientRect();
+
+        // Position toolbar above selection, centered
+        const top = start.top - containerRect.top - 45;
+        const left = (start.left + end.left) / 2 - containerRect.left;
+
+        setSelectionCoords({ top: Math.max(0, top), left });
+      } else {
+        setSelectionCoords(null);
+      }
     },
   });
 
@@ -145,17 +164,17 @@ export const Editor: React.FC<EditorProps> = ({
     if (containerRef.current) {
       const editorElement = containerRef.current.querySelector('.ProseMirror');
       if (editorElement) {
-         // Get the computed line height (approx 1.6rem = 25.6px at 16px root)
-         // We must match the CSS variable --editor-line-height
-         const style = window.getComputedStyle(editorElement);
-         const lineHeight = parseFloat(style.lineHeight);
-         const scrollHeight = editorElement.scrollHeight;
-         
-         if (lineHeight && scrollHeight) {
-            // Calculate lines based on content height. 
-            const lines = Math.max(1, Math.round(scrollHeight / lineHeight));
-            setVisualLineCount(lines);
-         }
+        // Get the computed line height (approx 1.6rem = 25.6px at 16px root)
+        // We must match the CSS variable --editor-line-height
+        const style = window.getComputedStyle(editorElement);
+        const lineHeight = parseFloat(style.lineHeight);
+        const scrollHeight = editorElement.scrollHeight;
+
+        if (lineHeight && scrollHeight) {
+          // Calculate lines based on content height. 
+          const lines = Math.max(1, Math.round(scrollHeight / lineHeight));
+          setVisualLineCount(lines);
+        }
       }
     }
   }, []);
@@ -165,14 +184,14 @@ export const Editor: React.FC<EditorProps> = ({
     updateLineNumbers();
     const observer = new ResizeObserver(updateLineNumbers);
     const currentContainer = containerRef.current;
-    
+
     // Observe the editor content specifically
     const editorEl = currentContainer?.querySelector('.ProseMirror');
-    
+
     if (editorEl) {
       observer.observe(editorEl);
     }
-    
+
     return () => observer.disconnect();
   }, [editor, content, updateLineNumbers]);
 
@@ -181,7 +200,7 @@ export const Editor: React.FC<EditorProps> = ({
   useDebounce(() => {
     const runCheck = async () => {
       if (!editor || isCheckingRef.current) return;
-      
+
       const text = editor.getText();
       if (text.length < 2) {
         setMatches([]);
@@ -195,8 +214,8 @@ export const Editor: React.FC<EditorProps> = ({
 
       const doc = editor.state.doc;
       const validMatches = foundMatches.filter(m => {
-          const to = textOffsetToPos(doc, m.offset + m.length);
-          return to <= doc.content.size;
+        const to = textOffsetToPos(doc, m.offset + m.length);
+        return to <= doc.content.size;
       });
 
       setMatches(validMatches);
@@ -243,9 +262,9 @@ export const Editor: React.FC<EditorProps> = ({
       const sortedErrors = [...externalAction.payload.errors].sort((a, b) => b.from - a.from);
       const chain = editor.chain().focus();
       sortedErrors.forEach((error: SidebarErrorItem) => {
-         if (error.replacements.length > 0) {
-            chain.setTextSelection({ from: error.from, to: error.to }).insertContent(error.replacements[0]);
-         }
+        if (error.replacements.length > 0) {
+          chain.setTextSelection({ from: error.from, to: error.to }).insertContent(error.replacements[0]);
+        }
       });
       chain.run();
       setMatches([]);
@@ -260,16 +279,16 @@ export const Editor: React.FC<EditorProps> = ({
         try {
           const { from, to, empty } = editor.state.selection;
           if (!empty) {
-             const textToEnhance = editor.state.doc.textBetween(from, to);
-             const enhanced = await enhanceText(textToEnhance);
-             editor.chain().focus().insertContent(enhanced).run();
+            const textToEnhance = editor.state.doc.textBetween(from, to);
+            const enhanced = await enhanceText(textToEnhance);
+            editor.chain().focus().insertContent(enhanced).run();
           } else {
-             const enhanced = await enhanceText(currentText);
-             editor.commands.setContent(enhanced);
+            const enhanced = await enhanceText(currentText);
+            editor.commands.setContent(enhanced);
           }
         } catch (e: any) {
           console.error(e);
-          onAIError(e.name === 'AIProviderError' ? 'AI provider not configured' : 'Failed to enhance text');
+          onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to enhance text.');
         } finally {
           setProcessingState(null);
           onActionComplete();
@@ -279,29 +298,29 @@ export const Editor: React.FC<EditorProps> = ({
     }
 
     if (externalAction.type === 'summarize') {
-        const performSummarization = async () => {
-          setProcessingState('summarize');
-          const currentText = editor.getText();
-          try {
-            const { from, to, empty } = editor.state.selection;
-            if (!empty) {
-               const textToSummarize = editor.state.doc.textBetween(from, to);
-               const summary = await summarizeText(textToSummarize);
-               editor.chain().focus().insertContent(summary).run();
-            } else {
-               const summary = await summarizeText(currentText);
-               editor.commands.setContent(summary);
-            }
-          } catch (e: any) {
-            console.error(e);
-            onAIError(e.name === 'AIProviderError' ? 'AI provider not configured' : 'Failed to summarize text');
-          } finally {
-            setProcessingState(null);
-            onActionComplete();
+      const performSummarization = async () => {
+        setProcessingState('summarize');
+        const currentText = editor.getText();
+        try {
+          const { from, to, empty } = editor.state.selection;
+          if (!empty) {
+            const textToSummarize = editor.state.doc.textBetween(from, to);
+            const summary = await summarizeText(textToSummarize);
+            editor.chain().focus().insertContent(summary).run();
+          } else {
+            const summary = await summarizeText(currentText);
+            editor.commands.setContent(summary);
           }
-        };
-        performSummarization();
-      }
+        } catch (e: any) {
+          console.error(e);
+          onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to summarize text.');
+        } finally {
+          setProcessingState(null);
+          onActionComplete();
+        }
+      };
+      performSummarization();
+    }
 
     if (externalAction.type === 'scroll') {
       const pos = externalAction.payload;
@@ -320,24 +339,72 @@ export const Editor: React.FC<EditorProps> = ({
     return null;
   }
 
+  // Selection-based enhance handler
+  const handleSelectionEnhance = async () => {
+    const { from, to, empty } = editor.state.selection;
+    if (empty) return;
+
+    setProcessingState('enhance');
+    try {
+      const textToEnhance = editor.state.doc.textBetween(from, to);
+      const enhanced = await enhanceText(textToEnhance);
+      editor.chain().focus().insertContent(enhanced).run();
+    } catch (e: any) {
+      console.error(e);
+      onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to enhance text.');
+    } finally {
+      setProcessingState(null);
+      setSelectionCoords(null);
+    }
+  };
+
+  // Selection-based summarize handler
+  const handleSelectionSummarize = async () => {
+    const { from, to, empty } = editor.state.selection;
+    if (empty) return;
+
+    setProcessingState('summarize');
+    try {
+      const textToSummarize = editor.state.doc.textBetween(from, to);
+      const summary = await summarizeText(textToSummarize);
+      editor.chain().focus().insertContent(summary).run();
+    } catch (e: any) {
+      console.error(e);
+      onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to summarize text.');
+    } finally {
+      setProcessingState(null);
+      setSelectionCoords(null);
+    }
+  };
+
   return (
-    <div 
-      className="w-full h-full relative cursor-text flex overflow-hidden" 
+    <div
+      className="w-full h-full relative cursor-text flex overflow-hidden"
       onClick={() => editor.chain().focus().run()}
       ref={containerRef}
     >
+      {/* Selection Toolbar */}
+      {selectionCoords && (
+        <SelectionToolbar
+          position={selectionCoords}
+          onEnhance={handleSelectionEnhance}
+          onSummarize={handleSelectionSummarize}
+          processingState={processingState}
+        />
+      )}
+
       {/* Scrollable Container with Line Numbers + Editor */}
       <div className="flex-1 minimal-scrollbar overflow-y-auto h-full flex">
-         {/* Line Numbers Gutter */}
-         <div className="min-w-[3rem] pt-12 pr-4 text-right select-none text-text/30 font-mono text-[1rem] leading-[1.6rem] border-r border-text/5 bg-background/50">
-            {Array.from({ length: visualLineCount }).map((_, i) => (
-                <div key={i}>{i + 1}</div>
-            ))}
-         </div>
-         {/* Editor Content Area */}
-         <div className="flex-1 pt-12 pr-12 pb-20 pl-4">
-            <EditorContent editor={editor} className="w-full" />
-         </div>
+        {/* Line Numbers Gutter */}
+        <div className="min-w-[3rem] pt-12 pr-4 text-right select-none text-text/30 font-mono text-[1rem] leading-[1.6rem] border-r border-text/5 bg-background/50">
+          {Array.from({ length: visualLineCount }).map((_, i) => (
+            <div key={i}>{i + 1}</div>
+          ))}
+        </div>
+        {/* Editor Content Area */}
+        <div className="flex-1 pt-12 pr-12 pb-20 pl-4">
+          <EditorContent editor={editor} className="w-full" />
+        </div>
       </div>
     </div>
   );
