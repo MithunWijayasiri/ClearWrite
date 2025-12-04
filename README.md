@@ -53,9 +53,8 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
    **For Gemini (Default):**
    ```env
    AI_PROVIDER=gemini
-   APP_PASSWORD=your_secret_password
    GEMINI_API_KEY=your_gemini_api_key_here
-   GEMINI_MODEL=gemini-2.5-flash
+   GEMINI_MODEL=gemini-2.0-flash-exp
    ```
    
    **For Longcat:**
@@ -84,7 +83,6 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 | Variable | Description | Required | Default |
 |----------|-------------|----------|----------|
 | `AI_PROVIDER` | AI provider to use (`gemini` or `longcat`) | No | `gemini` |
-| `APP_PASSWORD` | Password to protect the AI API endpoint | No | - |
 
 ### Gemini Configuration
 

@@ -8,6 +8,22 @@ interface RequestBody {
   text: string;
 }
 
+// Helper function to make HTTP requests with error handling
+async function fetchWithErrorHandling(
+  url: string,
+  options: RequestInit,
+  providerName: string
+): Promise<any> {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`${providerName} API error: ${response.status} - ${errorText}`);
+  }
+
+  return response.json();
+}
+
 // Longcat API call (OpenAI-compatible format)
 async function callLongcat(prompt: string): Promise<string> {
   const apiKey = process.env.LONGCAT_API_KEY;
@@ -18,39 +34,37 @@ async function callLongcat(prompt: string): Promise<string> {
     throw new Error('Longcat configuration missing');
   }
 
-  const response = await fetch(`${endpoint}/v1/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
+  const data = await fetchWithErrorHandling(
+    `${endpoint}/v1/chat/completions`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 2000,
+        temperature: 0.7,
+      }),
     },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 2000,
-      temperature: 0.7,
-    }),
-  });
+    'Longcat'
+  );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Longcat API error: ${response.status} - ${errorText}`);
-  }
-
-  const data = await response.json();
   return data.choices?.[0]?.message?.content?.trim() || '';
 }
 
 // Gemini API call
 async function callGemini(prompt: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
 
   if (!apiKey) {
     throw new Error('Gemini configuration missing');
   }
 
-  const response = await fetch(
+  const data = await fetchWithErrorHandling(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: 'POST',
@@ -60,15 +74,10 @@ async function callGemini(prompt: string): Promise<string> {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
       }),
-    }
+    },
+    'Gemini'
   );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
-  }
-
-  const data = await response.json();
   return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
 }
 
@@ -111,7 +120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-app-password');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -127,15 +136,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Security: Check for App Password if configured
-    const appPassword = process.env.APP_PASSWORD;
-    if (appPassword) {
-      const providedPassword = req.headers['x-app-password'];
-      if (providedPassword !== appPassword) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid App Password' });
-      }
-    }
-
     const { action, text } = req.body as RequestBody;
 
     if (!action || !text) {

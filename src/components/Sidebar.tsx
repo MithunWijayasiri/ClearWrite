@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SidebarErrorItem } from '../types';
-import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText, Settings } from 'lucide-react';
+import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText } from 'lucide-react';
 import { ProcessingState } from '../App';
-import { getActiveProviderName } from '../services/aiService';
 
 interface SidebarProps {
   errors: SidebarErrorItem[];
@@ -45,12 +44,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeErrorId
 }) => {
   const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const [providerName, setProviderName] = useState<string>('');
-
-  useEffect(() => {
-    // Provider is determined server-side, so we use a generic name
-    setProviderName(getActiveProviderName());
-  }, []);
 
   useEffect(() => {
     if (activeErrorId && itemRefs.current[activeErrorId]) {
@@ -61,14 +54,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [activeErrorId]);
 
-  const handleSettings = () => {
-    const currentPass = localStorage.getItem('app_password') || '';
-    const newPass = window.prompt('Enter App Password (for AI features):', currentPass);
-    if (newPass !== null) {
-      localStorage.setItem('app_password', newPass);
-    }
-  };
-
   const isEnhancing = processingState === 'enhance';
   const isSummarizing = processingState === 'summarize';
   const isBusy = processingState !== null;
@@ -77,18 +62,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="w-full h-full flex flex-col bg-surface border-l border-text/10 transition-colors duration-300">
       {/* Header */}
       <div className="p-6 border-b border-text/10 shrink-0">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-text/50">
-            Assistant
-          </h2>
-          <button
-            onClick={handleSettings}
-            className="text-text/30 hover:text-text/70 transition-colors"
-            title="AI Settings"
-          >
-            <Settings size={14} />
-          </button>
-        </div>
+        <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-text/50 mb-4">
+          Assistant
+        </h2>
 
         <div className="grid grid-cols-2 gap-3">
           <button
@@ -199,7 +175,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="p-4 border-t border-text/10 text-center shrink-0">
         <p className="text-[10px] text-text/40 font-mono">
-          Powered by LanguageTool & {providerName}
+          Powered by LanguageTool & AI
         </p>
       </div>
     </aside>

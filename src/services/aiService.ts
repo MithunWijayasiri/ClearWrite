@@ -1,10 +1,5 @@
 // AI Service - Calls backend API to securely interact with AI providers
 
-// Returns a generic name since provider is determined server-side
-export const getActiveProviderName = (): string => {
-  return 'AI';
-};
-
 export class AIProviderError extends Error {
   constructor(message: string) {
     super(message);
@@ -15,22 +10,16 @@ export class AIProviderError extends Error {
 const API_ENDPOINT = '/api/ai';
 
 async function callAI(action: 'enhance' | 'summarize', text: string): Promise<string> {
-  const appPassword = localStorage.getItem('app_password') || '';
-  
   const response = await fetch(API_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-app-password': appPassword,
     },
     body: JSON.stringify({ action, text }),
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    if (response.status === 401) {
-       throw new AIProviderError('Unauthorized: Please check your App Password in settings.');
-    }
     throw new AIProviderError(errorData.error || 'AI service unavailable');
   }
 
