@@ -101,8 +101,8 @@ export const checkGrammar = async (text: string): Promise<GrammarMatch[]> => {
         return matches.map(match => ({
           ...match,
           offset: match.offset + chunk.startOffset,
-          // We need to ensure IDs are unique if the backend returns ids (usually they don't or they are not unique across requests)
-          // But usually we treat them as transient.
+          // Note: If the backend returns an 'id' field for matches, these IDs may not be unique across different chunks or requests.
+          // In this application, we do not rely on the 'id' field for any logic; matches are treated as transient and identified by their offset and context.
         }));
       } catch (error) {
         console.error("Grammar Check Chunk failed:", error);
