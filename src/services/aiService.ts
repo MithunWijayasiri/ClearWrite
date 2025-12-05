@@ -35,7 +35,10 @@ async function callAI(action: 'enhance' | 'summarize', text: string): Promise<st
     if (error.name === 'AbortError') {
       throw new AIProviderError('Request timed out. Please try again.');
     }
-    throw error;
+    if (error instanceof AIProviderError) {
+      throw error;
+    }
+    throw new AIProviderError(error?.message || 'An unexpected error occurred');
   } finally {
     clearTimeout(timeoutId);
   }
