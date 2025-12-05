@@ -28,6 +28,7 @@ interface EditorProps {
   onActionComplete: () => void;
   onErrorClick: (id: string | null) => void;
   onAIError: (message: string) => void;
+  setIsGrammarChecking: (isChecking: boolean) => void;
 }
 
 export const Editor: React.FC<EditorProps> = ({
@@ -38,7 +39,8 @@ export const Editor: React.FC<EditorProps> = ({
   externalAction,
   onActionComplete,
   onErrorClick,
-  onAIError
+  onAIError,
+  setIsGrammarChecking
 }) => {
   const [content, setContent] = useState('');
   const [visualLineCount, setVisualLineCount] = useState(1);
@@ -153,7 +155,9 @@ export const Editor: React.FC<EditorProps> = ({
       }
 
       isCheckingRef.current = true;
+      setIsGrammarChecking(true);
       const foundMatches = await checkGrammar(text);
+      setIsGrammarChecking(false);
       isCheckingRef.current = false;
 
       editor.commands.setGrammarMatches(foundMatches);

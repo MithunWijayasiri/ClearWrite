@@ -12,6 +12,7 @@ interface SidebarProps {
   onSummarize: () => void;
   onScrollToError: (from: number) => void;
   activeErrorId: string | null;
+  isGrammarChecking: boolean;
 }
 
 const WavyText = ({ text }: { text: string }) => {
@@ -41,7 +42,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onEnhance,
   onSummarize,
   onScrollToError,
-  activeErrorId
+  activeErrorId,
+  isGrammarChecking
 }) => {
   const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -101,6 +103,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Error Feed */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 minimal-scrollbar">
+        {isGrammarChecking && (
+          <div className="mb-4">
+            <div className="h-1 w-full bg-text/5 rounded overflow-hidden">
+               <div className="h-full bg-accent animate-progress-indeterminate origin-left"></div>
+            </div>
+            <p className="text-[10px] text-text/40 font-mono mt-1 text-center">Checking grammar...</p>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-mono text-text/50">
             {errors.length} {errors.length === 1 ? 'ISSUE' : 'ISSUES'} FOUND
