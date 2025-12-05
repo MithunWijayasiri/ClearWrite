@@ -17,6 +17,16 @@ export default {
       fontFamily: {
         mono: ['"Fira Code"', 'monospace'],
       },
+      animation: {
+        'progress-indeterminate': 'progress-indeterminate 1s infinite linear',
+      },
+      keyframes: {
+        'progress-indeterminate': {
+          '0%': { transform: 'translateX(-100%)', width: '20%' },
+          '50%': { transform: 'translateX(0%)', width: '50%' },
+          '100%': { transform: 'translateX(200%)', width: '20%' },
+        }
+      }
     },
   },
   plugins: [],

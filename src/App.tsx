@@ -19,6 +19,7 @@ function App() {
     payload?: any 
   } | null>(null);
   const [activeTab, setActiveTab] = useState<'editor' | 'assistant'>('editor');
+  const [isGrammarChecking, setIsGrammarChecking] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -121,6 +122,7 @@ function App() {
                 onActionComplete={handleActionComplete}
                 onErrorClick={handleErrorClick}
                 onAIError={handleAIError}
+                setIsGrammarChecking={setIsGrammarChecking}
               />
             </div>
           </div>
@@ -168,6 +170,7 @@ function App() {
             onSummarize={handleSummarize}
             onScrollToError={handleScrollToError}
             activeErrorId={activeErrorId}
+            isGrammarChecking={isGrammarChecking}
           />
         </aside>
       </div>
