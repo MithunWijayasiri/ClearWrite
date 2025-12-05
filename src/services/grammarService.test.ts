@@ -28,8 +28,8 @@ describe('grammarService', () => {
       // "First sentence." is 15 chars.
       // The splitter includes the trailing space in the first chunk if it fits.
       // The regex /([.?!])(\s+|$)/g captures the punctuation and the following space.
-      // So "First sentence. " is 16 chars.
-      // "Second sentence is here." is 24 chars.
+      // The split occurs immediately after the period, so "First sentence." is 15 chars (no trailing space).
+      // " Second sentence is here." is 25 chars (including the leading space).
 
       // Use limit 30 to allow second sentence to fit if standalone, but force split of combined text (39 chars).
       const result = splitTextIntoChunks(text, 30);
