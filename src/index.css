@@ -47,6 +47,8 @@
   font-size: var(--editor-font-size);
   line-height: var(--editor-line-height);
   color: rgb(var(--color-text));
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Enforce zero margins on paragraphs to align with line number grid */
@@ -116,17 +118,17 @@
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
   backdrop-filter: blur(8px);
   animation: toolbar-fade-in 0.15s ease-out;
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% + var(--toolbar-offset-x, 0px)));
 }
 
 @keyframes toolbar-fade-in {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(4px);
+    transform: translateX(calc(-50% + var(--toolbar-offset-x, 0px))) translateY(4px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(calc(-50% + var(--toolbar-offset-x, 0px))) translateY(0);
   }
 }
 
