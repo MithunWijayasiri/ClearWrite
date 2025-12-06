@@ -32,7 +32,7 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 ### Prerequisites
 
 - Node.js 18+ 
-- npm or yarn
+- pnpm
 - AI Provider API Key (Google Gemini or Longcat)
 
 ### Installation
@@ -45,7 +45,7 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Create a `.env.local` file in the root directory:
@@ -69,7 +69,7 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 
 4. Start the development server:
    ```bash
-   npx vercel dev
+   pnpm run dev:vercel
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -123,11 +123,11 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 
 | Command | Description |
 |---------|-------------|
-| `npx vercel dev` | Start development server with serverless functions |
-| `npm run dev` | Start Vite dev server only (no API) |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+| `pnpm run dev:vercel` | Start development server with serverless functions |
+| `pnpm run dev` | Start Vite dev server only (no API) |
+| `pnpm run build` | Build for production |
+| `pnpm run preview` | Preview production build |
+| `pnpm run lint` | Run ESLint |
 
 ## Project Structure
 
