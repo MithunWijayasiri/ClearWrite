@@ -8,20 +8,34 @@ interface RequestBody {
   text: string;
 }
 
+const FETCH_TIMEOUT_MS = 8000; // 8 seconds - stay under Vercel's 10s function timeout
+
 // Helper function to make HTTP requests with error handling
 async function fetchWithErrorHandling(
   url: string,
   options: RequestInit,
   providerName: string
 ): Promise<any> {
-  const response = await fetch(url, options);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`${providerName} API error: ${response.status} - ${errorText}`);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${providerName} API error: ${response.status} - ${errorText}`);
+    }
+
+    return response.json();
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error(`${providerName} request timed out after ${FETCH_TIMEOUT_MS / 1000}s`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return response.json();
 }
 
 // Longcat API call (OpenAI-compatible format)
@@ -45,7 +59,7 @@ async function callLongcat(prompt: string): Promise<string> {
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 2000,
+        max_tokens: 1024,
         temperature: 0.7,
       }),
     },
@@ -119,6 +133,10 @@ function checkRateLimit(): boolean {
   requestLog.push(now);
   return true;
 }
+
+export const config = {
+  maxDuration: 10,
+};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS
