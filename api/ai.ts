@@ -108,10 +108,10 @@ Original Text:
 "${text}"`;
   }
 
-  return `You are a professional editor. Summarize the following text, capturing the key points, 
-main arguments, and conclusions. Preserve the original tone. 
-Choose the best format (paragraph or bullet points) based on the content. 
-Return ONLY the summary.
+  return `You are a professional editor. Summarize the following text in a clear, concise paragraph. 
+Capture the key points, main arguments, and conclusions. Preserve the original tone. 
+Write in paragraph format only. Do not use bullet points, dashes, or lists. 
+Return ONLY the summary as a single paragraph.
 
 Original Text:
 "${text}"`;
