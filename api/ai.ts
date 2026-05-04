@@ -52,7 +52,8 @@ async function callLongcat(prompt: string): Promise<string> {
     'Longcat'
   );
 
-  return data.choices?.[0]?.message?.content?.trim() || '';
+  const choice = data.choices?.[0]?.message;
+  return choice?.content?.trim() || choice?.reasoning_content?.trim() || '';
 }
 
 // Gemini API call
@@ -84,16 +85,19 @@ async function callGemini(prompt: string): Promise<string> {
 // Generate prompt based on action
 function getPrompt(action: AIAction, text: string): string {
   if (action === 'enhance') {
-    return `You are a professional editor. Rewrite the following text to improve vocabulary, 
-clarity, and tone while STRICTLY maintaining the original meaning. 
-Do not add conversational filler. Return ONLY the rewritten text.
+    return `You are a professional editor. Rewrite the following text to improve clarity, 
+readability, and flow while STRICTLY preserving the original meaning and the author's voice. 
+Fix grammar and punctuation. Do not add new information or conversational filler. 
+Return ONLY the rewritten text.
 
 Original Text:
 "${text}"`;
   }
 
-  return `You are a professional editor. Summarize the following text concisely 
-while retaining the key points. Return ONLY the summary.
+  return `You are a professional editor. Summarize the following text, capturing the key points, 
+main arguments, and conclusions. Preserve the original tone. 
+Choose the best format (paragraph or bullet points) based on the content. 
+Return ONLY the summary.
 
 Original Text:
 "${text}"`;
