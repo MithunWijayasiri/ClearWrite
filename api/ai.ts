@@ -8,20 +8,34 @@ interface RequestBody {
   text: string;
 }
 
+const FETCH_TIMEOUT_MS = 8000; // 8 seconds - stay under Vercel's 10s function timeout
+
 // Helper function to make HTTP requests with error handling
 async function fetchWithErrorHandling(
   url: string,
   options: RequestInit,
   providerName: string
 ): Promise<any> {
-  const response = await fetch(url, options);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`${providerName} API error: ${response.status} - ${errorText}`);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`${providerName} API error: ${response.status} - ${errorText}`);
+    }
+
+    return response.json();
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error(`${providerName} request timed out after ${FETCH_TIMEOUT_MS / 1000}s`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return response.json();
 }
 
 // Longcat API call (OpenAI-compatible format)
@@ -45,14 +59,15 @@ async function callLongcat(prompt: string): Promise<string> {
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 2000,
+        max_tokens: 1024,
         temperature: 0.7,
       }),
     },
     'Longcat'
   );
 
-  return data.choices?.[0]?.message?.content?.trim() || '';
+  const choice = data.choices?.[0]?.message;
+  return choice?.content?.trim() || choice?.reasoning_content?.trim() || '';
 }
 
 // Gemini API call
@@ -84,16 +99,19 @@ async function callGemini(prompt: string): Promise<string> {
 // Generate prompt based on action
 function getPrompt(action: AIAction, text: string): string {
   if (action === 'enhance') {
-    return `You are a professional editor. Rewrite the following text to improve vocabulary, 
-clarity, and tone while STRICTLY maintaining the original meaning. 
-Do not add conversational filler. Return ONLY the rewritten text.
+    return `You are a professional editor. Rewrite the following text to improve clarity, 
+readability, and flow while STRICTLY preserving the original meaning and the author's voice. 
+Fix grammar and punctuation. Do not add new information or conversational filler. 
+Return ONLY the rewritten text.
 
 Original Text:
 "${text}"`;
   }
 
-  return `You are a professional editor. Summarize the following text concisely 
-while retaining the key points. Return ONLY the summary.
+  return `You are a professional editor. Summarize the following text, capturing the key points, 
+main arguments, and conclusions. Preserve the original tone. 
+Choose the best format (paragraph or bullet points) based on the content. 
+Return ONLY the summary.
 
 Original Text:
 "${text}"`;
@@ -115,6 +133,10 @@ function checkRateLimit(): boolean {
   requestLog.push(now);
   return true;
 }
+
+export const config = {
+  maxDuration: 10,
+};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Handle CORS

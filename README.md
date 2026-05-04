@@ -96,8 +96,19 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
 | Variable | Description | Required | Default |
 |----------|-------------|----------|----------|
 | `LONGCAT_API_KEY` | Your Longcat API key | Yes (if using Longcat) | - |
-| `LONGCAT_MODEL` | The Longcat model to use (e.g., `LongCat-Flash-Chat`) | Yes (if using Longcat) | - |
+| `LONGCAT_MODEL` | The Longcat model to use | Yes (if using Longcat) | - |
 | `LONGCAT_ENDPOINT` | Longcat API endpoint | No | `https://api.longcat.chat/openai` |
+
+#### Thinking vs Non-Thinking Models
+
+ClearWrite supports both thinking and non-thinking Longcat models. However, **thinking models** (e.g., `LongCat-Flash-Thinking`) require more processing time and may exceed serverless function timeouts.
+
+| Model Type | Example | Response Time | Vercel Hobby Plan |
+|------------|---------|---------------|-------------------|
+| Non-thinking | `LongCat-Flash-Chat` | ~1-3s | ✅ Supported |
+| Thinking | `LongCat-Flash-Thinking-2601` | ~10s+ | ❌ May timeout |
+
+> **Note:** Vercel's Hobby (free) plan has a 10-second serverless function timeout. If you want to use thinking models, upgrade to Vercel Pro (up to 300s timeout). For Hobby plan users, use non-thinking models like `LongCat-Flash-Chat`.
 
 ## Deployment on Vercel
 
@@ -113,7 +124,7 @@ ClearWrite is an intelligent writing assistant that provides real-time grammar c
    **For Longcat:**
    - `AI_PROVIDER` - Set to `longcat`
    - `LONGCAT_API_KEY` - Your Longcat API key
-   - `LONGCAT_MODEL` - The Longcat model name
+   - `LONGCAT_MODEL` - The Longcat model name (use non-thinking models on Hobby plan)
    - `LONGCAT_ENDPOINT` - (Optional) Custom endpoint URL
    
    > **Note:** These are server-side environment variables in Vercel. They will NOT be exposed to the client.

@@ -225,7 +225,7 @@ export const Editor: React.FC<EditorProps> = ({
           }
         } catch (e: any) {
           console.error(e);
-          onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to enhance text.');
+          onAIError(e.name === 'AIProviderError' ? e.message : 'Failed to enhance text.');
         } finally {
           setProcessingState(null);
           onActionComplete();
@@ -250,7 +250,7 @@ export const Editor: React.FC<EditorProps> = ({
           }
         } catch (e: any) {
           console.error(e);
-          onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to summarize text.');
+          onAIError(e.name === 'AIProviderError' ? e.message : 'Failed to summarize text.');
         } finally {
           setProcessingState(null);
           onActionComplete();
@@ -288,7 +288,7 @@ export const Editor: React.FC<EditorProps> = ({
       editor.chain().focus().insertContent(enhanced).run();
     } catch (e: any) {
       console.error(e);
-      onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to enhance text.');
+      onAIError(e.name === 'AIProviderError' ? e.message : 'Failed to enhance text.');
     } finally {
       setProcessingState(null);
       setSelectionCoords(null);
@@ -307,7 +307,7 @@ export const Editor: React.FC<EditorProps> = ({
       editor.chain().focus().insertContent(summary).run();
     } catch (e: any) {
       console.error(e);
-      onAIError(e.name === 'AIProviderError' ? 'AI provider not configured.' : 'Failed to summarize text.');
+      onAIError(e.name === 'AIProviderError' ? e.message : 'Failed to summarize text.');
     } finally {
       setProcessingState(null);
       setSelectionCoords(null);
