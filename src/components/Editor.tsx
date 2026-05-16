@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Highlight } from '@tiptap/extension-highlight';
-import { checkGrammar } from '../services/grammarService';
+import { checkGrammar, deepScanGrammar } from '../services/grammarService';
 import { enhanceText, summarizeText } from '../services/aiService';
 import { GrammarMatch, SidebarErrorItem, EditorStats } from '../types';
 import { ProcessingState } from '../App';
@@ -24,7 +24,7 @@ interface EditorProps {
   onErrorsUpdate: (errors: SidebarErrorItem[]) => void;
   processingState: ProcessingState;
   setProcessingState: (state: ProcessingState) => void;
-  externalAction: { type: 'fix' | 'enhance' | 'summarize' | 'fixAll' | 'scroll' | 'copy', payload?: any } | null;
+  externalAction: { type: 'fix' | 'enhance' | 'summarize' | 'fixAll' | 'scroll' | 'copy' | 'deepScan', payload?: any } | null;
   onActionComplete: () => void;
   onErrorClick: (id: string | null) => void;
   onAIError: (message: string) => void;
@@ -268,6 +268,28 @@ export const Editor: React.FC<EditorProps> = ({
     if (externalAction.type === 'copy') {
       const text = editor.getText();
       navigator.clipboard.writeText(text).then(() => onActionComplete()).catch(() => onActionComplete());
+    }
+
+    if (externalAction.type === 'deepScan') {
+      const performDeepScan = async () => {
+        setProcessingState('deepScan');
+        try {
+          const text = editor.getText();
+          if (text.length < 2) {
+            onActionComplete();
+            return;
+          }
+          const matches = await deepScanGrammar(text);
+          editor.commands.setGrammarMatches(matches);
+        } catch (e: any) {
+          console.error(e);
+          onAIError('Failed to perform deep scan.');
+        } finally {
+          setProcessingState(null);
+          onActionComplete();
+        }
+      };
+      performDeepScan();
     }
 
   }, [externalAction, editor, setProcessingState, onActionComplete, onErrorsUpdate]);

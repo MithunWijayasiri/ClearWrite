@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 type AIProvider = 'gemini' | 'longcat';
-type AIAction = 'enhance' | 'summarize';
+type AIAction = 'enhance' | 'summarize' | 'grammar';
 
 interface RequestBody {
   action: AIAction;
@@ -39,7 +39,7 @@ async function fetchWithErrorHandling(
 }
 
 // Longcat API call (OpenAI-compatible format)
-async function callLongcat(prompt: string): Promise<string> {
+async function callLongcat(prompt: string, temperature: number = 0.7): Promise<string> {
   const apiKey = process.env.LONGCAT_API_KEY;
   const model = process.env.LONGCAT_MODEL;
   const endpoint = process.env.LONGCAT_ENDPOINT || 'https://api.longcat.chat/openai';
@@ -60,7 +60,7 @@ async function callLongcat(prompt: string): Promise<string> {
         model,
         messages: [{ role: 'user', content: prompt }],
         max_tokens: 1024,
-        temperature: 0.7,
+        temperature,
       }),
     },
     'Longcat'
@@ -71,7 +71,7 @@ async function callLongcat(prompt: string): Promise<string> {
 }
 
 // Gemini API call
-async function callGemini(prompt: string): Promise<string> {
+async function callGemini(prompt: string, temperature: number = 0.7): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
 
@@ -88,6 +88,7 @@ async function callGemini(prompt: string): Promise<string> {
       },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature },
       }),
     },
     'Gemini'
@@ -98,6 +99,32 @@ async function callGemini(prompt: string): Promise<string> {
 
 // Generate prompt based on action
 function getPrompt(action: AIAction, text: string): string {
+  if (action === 'grammar') {
+    return `You are a precise grammar checker. Analyze the following text and identify ALL grammar, syntax, and usage errors.
+
+RULES:
+- Only report CLEAR errors. Do not flag stylistic preferences or correct usage.
+- For each error, extract the EXACT erroneous text as it appears in the original — character for character, including spacing and punctuation.
+- Focus on: tense inconsistency, subject-verb disagreement, adverb/adjective confusion, double/triple negatives, dangling modifiers, incorrect infinitive forms, pronoun errors, misused prepositions/conjunctions (e.g. "Despite" followed by a clause instead of a noun phrase), run-on sentences, and comma splices.
+- Do NOT flag spelling errors (another system handles those).
+- Return a JSON array. If no errors found, return an empty array [].
+
+RESPONSE FORMAT (strict JSON only — no markdown, no code fences, no explanation outside the array):
+[
+  {
+    "text": "<exact erroneous substring from the original>",
+    "replacement": "<corrected text>",
+    "message": "<brief explanation of the error>",
+    "category": "grammar" | "syntax" | "style" | "tense" | "agreement"
+  }
+]
+
+Text to check:
+"""
+${text}
+"""`;
+  }
+
   if (action === 'enhance') {
     return `You are a professional editor. Rewrite the following text to improve clarity, 
 readability, and flow while STRICTLY preserving the original meaning and the author's voice. 
@@ -164,19 +191,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing action or text' });
     }
 
-    if (!['enhance', 'summarize'].includes(action)) {
+    if (!['enhance', 'summarize', 'grammar'].includes(action)) {
       return res.status(400).json({ error: 'Invalid action' });
     }
 
     const provider = (process.env.AI_PROVIDER || 'gemini') as AIProvider;
     const prompt = getPrompt(action, text);
+    const temperature = action === 'grammar' ? 0.1 : 0.7;
 
     let result: string;
 
     if (provider === 'longcat') {
-      result = await callLongcat(prompt);
+      result = await callLongcat(prompt, temperature);
     } else {
-      result = await callGemini(prompt);
+      result = await callGemini(prompt, temperature);
     }
 
     return res.status(200).json({ result });

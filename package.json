@@ -8,7 +8,8 @@
     "dev:vercel": "vercel dev --local-config vercel.json",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "jest"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",

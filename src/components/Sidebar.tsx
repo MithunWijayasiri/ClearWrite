@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { SidebarErrorItem } from '../types';
-import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText } from 'lucide-react';
+import { Wand2, CheckCheck, AlertCircle, AlertTriangle, FileText, ScanSearch } from 'lucide-react';
 import { ProcessingState } from '../App';
 
 interface SidebarProps {
@@ -10,6 +10,7 @@ interface SidebarProps {
   onFixAll: () => void;
   onEnhance: () => void;
   onSummarize: () => void;
+  onDeepScan: () => void;
   onScrollToError: (from: number) => void;
   activeErrorId: string | null;
   isGrammarChecking: boolean;
@@ -41,6 +42,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onFixAll,
   onEnhance,
   onSummarize,
+  onDeepScan,
   onScrollToError,
   activeErrorId,
   isGrammarChecking
@@ -58,6 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isEnhancing = processingState === 'enhance';
   const isSummarizing = processingState === 'summarize';
+  const isDeepScanning = processingState === 'deepScan';
   const isBusy = processingState !== null;
 
   return (
@@ -99,6 +102,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {isSummarizing ? <WavyText text="Summarizing..." /> : 'Summarize'}
           </button>
         </div>
+
+        <button
+          onClick={onDeepScan}
+          disabled={isBusy}
+          className={`w-full flex items-center justify-center gap-2 py-3 px-2 font-mono text-xs border transition-all duration-200 mt-3 ${isBusy && !isDeepScanning
+              ? 'opacity-50 cursor-not-allowed border-text/5'
+              : isDeepScanning
+                ? 'border-accent text-accent bg-accent/5'
+                : 'border-text/20 text-text hover:bg-text hover:text-background hover:border-transparent active:scale-[0.98]'
+            }`}
+          title="AI-powered deep grammar analysis"
+        >
+          <ScanSearch size={14} className={isDeepScanning ? "text-accent" : ""} />
+          {isDeepScanning ? <WavyText text="Deep Scanning..." /> : 'Deep Scan'}
+        </button>
       </div>
 
       {/* Error Feed */}

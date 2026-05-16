@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { SidebarErrorItem, EditorStats } from './types';
 import { FileText, Github, Sun, Moon, Copy, Check, Wand2 } from 'lucide-react';
 
-export type ProcessingState = 'enhance' | 'summarize' | null;
+export type ProcessingState = 'enhance' | 'summarize' | 'deepScan' | null;
 
 function App() {
   const [stats, setStats] = useState<EditorStats>({ words: 0, characters: 0 });
@@ -14,9 +14,9 @@ function App() {
   const [isCopied, setIsCopied] = useState(false);
   const [activeErrorId, setActiveErrorId] = useState<string | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
-  const [editorAction, setEditorAction] = useState<{ 
-    type: 'fix' | 'enhance' | 'summarize' | 'fixAll' | 'scroll' | 'copy', 
-    payload?: any 
+  const [editorAction, setEditorAction] = useState<{
+    type: 'fix' | 'enhance' | 'summarize' | 'fixAll' | 'scroll' | 'copy' | 'deepScan',
+    payload?: any
   } | null>(null);
   const [activeTab, setActiveTab] = useState<'editor' | 'assistant'>('editor');
   const [isGrammarChecking, setIsGrammarChecking] = useState(false);
@@ -51,6 +51,10 @@ function App() {
 
   const handleSummarize = () => {
     setEditorAction({ type: 'summarize' });
+  };
+
+  const handleDeepScan = () => {
+    setEditorAction({ type: 'deepScan' });
   };
 
   const handleAIError = (message: string) => {
@@ -168,6 +172,7 @@ function App() {
             onFixAll={handleFixAll}
             onEnhance={handleEnhance}
             onSummarize={handleSummarize}
+            onDeepScan={handleDeepScan}
             onScrollToError={handleScrollToError}
             activeErrorId={activeErrorId}
             isGrammarChecking={isGrammarChecking}
